@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net https://www.gstatic.com https://*.firebaseio.com https://*.googleapis.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.gstatic.com https://*.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; frame-ancestors 'none'">
+<title>InSoccer — Il Calcio Diventa un Gioco</title>
+<meta name="description" content="InSoccer trasforma il calcio amatoriale in un'esperienza da videogioco. App + SmartCone per tracking reale, gamification e crescita misurabile.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Chakra+Petch:wght@300;400;500;600;700&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ── */
+:root {
+  --void:   #05060A;
+  --deep:   #08090E;
+  --panel:  #0D1117;
+  --raised: #111827;
+  --accent: #162032;
+  --cyan:   #00D4FF;
+  --coral:  #FF2D55;
+  --gold:   #FFD60A;
+  --lime:   #34C759;
+  --violet: #5856D6;
+  --text:   #FFFFFF;
+  --sub:    rgba(255,255,255,0.62);
+  --ghost:  rgba(255,255,255,0.32);
+  --border: rgba(255,255,255,0.08);
+  --ease:   cubic-bezier(0.16, 1, 0.3, 1);
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  background: var(--void);
+  color: var(--text);
+  font-family: 'Chakra Petch', system-ui, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; background: none; font: inherit; }
+img { display: block; max-width: 100%; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ── NOISE GRAIN OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  opacity: 0.55;
+  mix-blend-mode: overlay;
+}
+
+/* ── SCANLINES ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.018) 2px, rgba(0,0,0,0.018) 4px);
+}
+
+/* ── AMBIENT GLOW ── */
+.ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.ambient::before {
+  content: '';
+  position: absolute; top: -100px; right: -100px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(0,212,255,0.10) 0%, transparent 65%);
+  animation: pulse-cyan 9s ease-in-out infinite;
+}
+.ambient::after {
+  content: '';
+  position: absolute; bottom: -100px; left: -100px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(255,45,85,0.07) 0%, transparent 65%);
+  animation: pulse-coral 12s ease-in-out infinite;
+}
+@keyframes pulse-cyan  { 0%,100%{opacity:1;transform:scale(1)}   50%{opacity:0.55;transform:scale(1.08)} }
+@keyframes pulse-coral { 0%,100%{opacity:1;transform:scale(1)}   50%{opacity:0.65;transform:scale(1.06)} }
+
+/* ── NAV ── */
+#nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  height: 68px;
+  padding: 0 clamp(1.5rem, 5vw, 4rem);
+  display: flex; align-items: center;
+  background: linear-gradient(180deg, rgba(5,6,10,0.96) 0%, transparent 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+  animation: navDrop 0.6s var(--ease) both;
+}
+@keyframes navDrop { from { transform:translateY(-100%);opacity:0 } to { transform:translateY(0);opacity:1 } }
+#nav.scrolled { background: rgba(5,6,10,0.97); border-bottom-color: var(--border); }
+
+.nav-logo { font-family: 'Russo One', sans-serif; font-size: 1.5rem; letter-spacing: 0.06em; }
+.nav-logo em { color: var(--cyan); font-style: normal; }
+
+.nav-links { display: flex; align-items: center; gap: 2.5rem; list-style: none; flex: 1; justify-content: center; }
+.nav-links a {
+  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--sub); transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text); }
+
+.nav-cta {
+  padding: 0.52rem 1.4rem;
+  background: var(--cyan); color: var(--void);
+  font-family: 'Russo One', sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  transition: transform 0.15s var(--ease), box-shadow 0.15s;
+  cursor: pointer;
+}
+.nav-cta:hover { transform: translateY(-1px); box-shadow: 0 0 28px rgba(0,212,255,0.5); }
+
+.hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; }
+.hamburger span { display: block; width: 22px; height: 2px; background: var(--text); transition: transform 0.25s, opacity 0.25s; }
+.hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-menu {
+  display: none; position: fixed; top: 68px; left: 0; right: 0; z-index: 499;
+  background: rgba(5,6,10,0.98); border-bottom: 1px solid var(--border);
+  padding: 1.5rem 2rem 2rem; flex-direction: column; gap: 1.5rem;
+  backdrop-filter: blur(20px);
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a { font-size: 0.82rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sub); }
+.mobile-menu .nav-cta { align-self: flex-start; }
+
+/* ── LAYOUT ── */
+section { position: relative; z-index: 3; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 clamp(1.5rem, 5vw, 4rem); }
+
+.eyebrow {
+  font-size: 0.65rem; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--cyan); margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--cyan); flex-shrink: 0; }
+
+.section-title {
+  font-family: 'Russo One', sans-serif;
+  font-size: clamp(2.2rem, 4.5vw, 4rem);
+  line-height: 1.0; letter-spacing: 0.01em; margin-bottom: 1.5rem;
+  position: relative; cursor: default;
+}
+.section-title .c { color: var(--cyan); }
+.section-title .r { color: var(--coral); }
+/* glitch */
+.section-title { transition: text-shadow 0.3s ease; }
+.section-title:hover { text-shadow: 0 0 30px rgba(0,212,255,0.4), 0 0 60px rgba(0,212,255,0.15); }
+.section-body { font-size: 0.95rem; color: var(--sub); line-height: 1.85; margin-bottom: 2rem; font-weight: 300; }
+
+/* ── BUTTONS ── */
+.btn-primary, .btn-secondary { position: relative; overflow: hidden; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  padding: 0.9rem 2.2rem;
+  background: linear-gradient(135deg, var(--coral) 0%, #CC0033 100%);
+  color: var(--text);
+  font-family: 'Russo One', sans-serif; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  transition: transform 0.2s var(--spring), box-shadow 0.2s;
+  cursor: pointer;
+}
+.btn-primary::before {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(255,255,255,0.14);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.35s var(--ease);
+}
+.btn-primary:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 40px rgba(255,45,85,0.55); }
+.btn-primary:hover::before { transform: scaleX(1); }
+
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  padding: 0.9rem 2.2rem;
+  border: 1px solid rgba(0,212,255,0.35); color: var(--cyan);
+  font-family: 'Russo One', sans-serif; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s var(--spring);
+}
+.btn-secondary::before {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(0,212,255,0.06);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.35s var(--ease);
+}
+.btn-secondary:hover { transform: translateY(-2px); box-shadow: 0 0 28px rgba(0,212,255,0.2); }
+.btn-secondary:hover::before { transform: scaleX(1); }
+
+/* ── REVEAL ── */
+.reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.12s; }
+.reveal-delay-2 { transition-delay: 0.24s; }
+.reveal-delay-3 { transition-delay: 0.36s; }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  padding: 110px 0 80px;
+  overflow: hidden; position: relative;
+}
+#hero::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,212,255,0.25), rgba(255,45,85,0.15), transparent);
+}
+
+/* Field grid */
+#hero-grid { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+#hero-grid svg { width: 100%; height: 100%; opacity: 0.055; }
+
+/* Ball */
+#ball-scene { position: absolute; top:0; left:0; right:0; bottom:0; pointer-events:none; z-index:1; overflow:visible; }
+#ball-wrap {
+  position: absolute; right: -60px; top: 50%;
+  width: 520px; height: 520px;
+  will-change: transform; opacity: 0;
+  animation: ballEntrance 1.2s var(--ease) 0.3s forwards;
+}
+#ball-glow {
+  position: absolute; inset: -80px;
+  background: radial-gradient(circle, rgba(0,212,255,0.17) 0%, rgba(255,45,85,0.07) 45%, transparent 70%);
+  border-radius: 50%;
+  animation: glow-breathe 5s ease-in-out infinite;
+}
+@keyframes glow-breathe { 0%,100%{opacity:0.7;transform:scale(1)} 50%{opacity:1;transform:scale(1.07)} }
+#ball-img { width:100%;height:100%;object-fit:contain;border-radius:50%;
+  filter: drop-shadow(0 0 40px rgba(0,212,255,0.22)) drop-shadow(0 24px 60px rgba(0,0,0,0.75)); }
+#ball-hud-ring {
+  position: absolute; inset: -32px;
+  border: 1px solid rgba(0,212,255,0.14); border-radius: 50%;
+  animation: ring-spin 22s linear infinite;
+}
+#ball-hud-ring::before {
+  content: ''; position: absolute; top: -2px; left: 50%; width: 5px; height: 5px; margin-left: -2.5px;
+  background: var(--cyan); border-radius: 50%; box-shadow: 0 0 10px var(--cyan);
+}
+#ball-hud-ring2 {
+  position: absolute; inset: -56px;
+  border: 1px solid rgba(255,45,85,0.08); border-radius: 50%;
+  animation: ring-spin 38s linear infinite reverse;
+}
+@keyframes ring-spin { to { transform: rotate(360deg); } }
+.ball-chip {
+  position: absolute;
+  background: rgba(8,9,14,0.94); border: 1px solid rgba(0,212,255,0.22);
+  padding: 6px 12px;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  animation: chip-float 4s ease-in-out infinite;
+}
+.ball-chip:nth-child(5) { animation-delay: -1.4s; }
+.ball-chip:nth-child(6) { animation-delay: -2.8s; }
+@keyframes chip-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+.chip-val { font-family:'Russo One',sans-serif; font-size:1.1rem; color:var(--cyan); line-height:1; }
+.chip-key { font-size:0.48rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--ghost); }
+.chip-speed  { top: 18%; left: -78px; }
+.chip-power  { bottom: 28%; left: -62px; }
+.chip-agility { top: 22%; right: -20px; }
+
+@keyframes ballEntrance {
+  0%   { opacity:0; transform:translateY(calc(-50% + 120px)) scale(0.72) rotate(-22deg); }
+  60%  { opacity:1; }
+  80%  { transform:translateY(calc(-50% - 8px)) scale(1.03) rotate(3deg); }
+  100% { opacity:1; transform:translateY(-50%) scale(1) rotate(0deg); }
+}
+
+/* Hero content */
+.hero-inner {
+  display: grid; grid-template-columns: 1fr 520px; gap: 0;
+  align-items: center; width: 100%; position: relative; z-index: 2;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid rgba(0,212,255,0.28); border-radius: 2px;
+  font-size: 0.65rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--cyan); margin-bottom: 1.5rem; width: fit-content;
+  opacity: 0; transform: translateX(-30px);
+  animation: slideInLeft 0.7s var(--ease) 0.2s forwards;
+}
+.hero-tag::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--cyan); animation:blink 1.6s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
+@keyframes slideInLeft { to { opacity:1; transform:translateX(0); } }
+
+.hero-title {
+  font-family: 'Russo One', sans-serif;
+  font-size: clamp(3.8rem, 9vw, 8.5rem);
+  line-height: 0.92; letter-spacing: 0.01em;
+  margin-bottom: 1.75rem;
+  opacity: 0; transform: translateY(40px);
+  animation: slideInUp 0.9s var(--ease) 0.4s forwards;
+}
+.hero-title .accent { color: var(--cyan); }
+.hero-title .accent-coral { color: var(--coral); }
+.hero-title .outline {
+  -webkit-text-stroke: 2px rgba(255,255,255,0.18); color: transparent;
+}
+@keyframes slideInUp { to { opacity:1; transform:translateY(0); } }
+
+.hero-sub {
+  font-size: clamp(0.88rem, 1.3vw, 1.0rem); font-weight: 300; color: var(--sub);
+  max-width: 500px; line-height: 1.85; margin-bottom: 2.5rem;
+  opacity: 0; transform: translateY(30px);
+  animation: slideInUp 0.8s var(--ease) 0.65s forwards;
+}
+.hero-actions {
+  display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; margin-bottom: 3rem;
+  opacity: 0; transform: translateY(20px);
+  animation: slideInUp 0.7s var(--ease) 0.85s forwards;
+}
+.hero-divider {
+  width: 48px; height: 1px;
+  background: linear-gradient(90deg, var(--cyan), transparent);
+  margin-bottom: 2rem;
+  opacity: 0; animation: fadeIn 0.6s ease 1.0s forwards;
+}
+@keyframes fadeIn { to { opacity: 1; } }
+.hero-stats {
+  display: flex; gap: 2.5rem;
+  opacity: 0; animation: slideInUp 0.7s var(--ease) 1.05s forwards;
+}
+.hero-stat-num {
+  font-family: 'Russo One', sans-serif; font-size: 2.4rem; letter-spacing: 0.02em; color: var(--text);
+}
+.hero-stat-num .c { color: var(--cyan); }
+.hero-stat-label { font-size: 0.6rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ghost); margin-top: 0.15rem; }
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+  opacity: 0; animation: fadeIn 0.6s ease 1.6s forwards;
+  z-index: 2;
+}
+.scroll-indicator span { font-size: 0.55rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ghost); }
+.scroll-line { width: 1px; height: 36px; background: linear-gradient(180deg, var(--cyan), transparent); animation: scrollPulse 2s ease-in-out infinite; }
+@keyframes scrollPulse { 0%,100%{opacity:0.4;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.15)} }
+
+/* ── PROBLEMA ── */
+#problema {
+  padding: 110px 0;
+  background: var(--deep);
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.problema-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+
+.pain-cards { display: flex; flex-direction: column; gap: 1rem; }
+.pain-card {
+  display: flex; gap: 1.25rem; align-items: flex-start;
+  padding: 1.25rem 1.5rem;
+  background: var(--panel); border: 1px solid var(--border);
+  border-left: 2px solid var(--coral);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  transition: transform 0.25s var(--ease), border-left-color 0.25s, box-shadow 0.25s;
+  position: relative; overflow: hidden; cursor: default;
+}
+.pain-card::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(0,212,255,0.035), transparent);
+  transform: translateX(-100%);
+}
+.pain-card:hover { transform: translateX(5px); border-left-color: var(--cyan); box-shadow: -4px 0 20px rgba(0,212,255,0.08); }
+.pain-card:hover::after { transform: translateX(100%); transition: transform 0.55s ease; }
+.pain-icon-box {
+  width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0;
+  background: rgba(255,45,85,0.1); border: 1px solid rgba(255,45,85,0.2);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.25s;
+}
+.pain-card:hover .pain-icon-box { background: rgba(0,212,255,0.1); border-color: rgba(0,212,255,0.2); }
+.pain-icon-box svg { width: 16px; height: 16px; stroke: var(--coral); stroke-width: 1.8; fill: none; transition: stroke 0.25s; }
+.pain-card:hover .pain-icon-box svg { stroke: var(--cyan); }
+.pain-title { font-size: 0.84rem; font-weight: 600; letter-spacing: 0.04em; margin-bottom: 0.3rem; }
+.pain-desc { font-size: 0.78rem; color: var(--sub); line-height: 1.7; font-weight: 300; }
+
+/* ── PRODOTTO ── */
+#prodotto { padding: 110px 0; }
+.prodotto-header { text-align: center; margin-bottom: 5rem; }
+.prodotto-header .section-title { display: inline-block; }
+.prodotto-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+
+.product-block {
+  background: var(--panel); border: 1px solid var(--border);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s, border-color 0.3s;
+  position: relative; overflow: hidden;
+}
+.product-block::after {
+  content: ''; position: absolute; left:0; right:0; top: -4px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  opacity: 0; transition: opacity 0.2s;
+  animation: none;
+}
+.product-block:hover { transform: translateY(-5px); }
+.product-block.cyan-glow:hover { box-shadow: 0 8px 50px rgba(0,212,255,0.12); border-color: rgba(0,212,255,0.18); }
+.product-block.coral-glow:hover { box-shadow: 0 8px 50px rgba(255,45,85,0.1); border-color: rgba(255,45,85,0.18); }
+.product-block.gold-glow:hover { box-shadow: 0 8px 50px rgba(255,214,10,0.1); border-color: rgba(255,214,10,0.2); }
+.product-block:hover::after { opacity: 0.7; animation: scanDown 0.9s ease forwards; }
+@keyframes scanDown { from{top:-4px} to{top:100%} }
+
+.product-header-bar {
+  padding: 1.5rem 1.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 1rem;
+}
+.product-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.product-icon.cyan-bg { background: linear-gradient(135deg,rgba(0,212,255,0.18),rgba(88,86,214,0.12)); border: 1px solid rgba(0,212,255,0.25); }
+.product-icon.coral-bg { background: linear-gradient(135deg,rgba(255,45,85,0.18),rgba(255,214,10,0.08)); border: 1px solid rgba(255,45,85,0.25); }
+.product-icon.gold-bg { background: linear-gradient(135deg,rgba(255,214,10,0.18),rgba(255,45,85,0.08)); border: 1px solid rgba(255,214,10,0.28); }
+.product-icon svg { width: 20px; height: 20px; stroke-width: 1.6; fill: none; }
+.product-icon.cyan-bg svg { stroke: var(--cyan); }
+.product-icon.coral-bg svg { stroke: var(--coral); }
+.product-icon.gold-bg svg { stroke: var(--gold); color: var(--gold); }
+.feature-item.gold-dot::before { background:var(--gold); box-shadow:0 0 6px var(--gold); }
+
+.product-name { font-family: 'Russo One', sans-serif; font-size: 1.25rem; letter-spacing: 0.05em; }
+.product-sub { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ghost); }
+.product-body { padding: 1.5rem 1.75rem 1.75rem; }
+.product-desc { font-size: 0.88rem; color: var(--sub); line-height: 1.75; margin-bottom: 1.5rem; font-weight: 300; }
+.feature-list { display: flex; flex-direction: column; gap: 0.55rem; }
+.feature-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; font-weight: 400; }
+.feature-item::before { content:''; width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.feature-item.cyan-dot::before { background:var(--cyan); box-shadow:0 0 6px var(--cyan); }
+.feature-item.coral-dot::before { background:var(--coral); box-shadow:0 0 6px var(--coral); }
+
+.product-visual {
+  margin: 0 1.75rem 1.75rem;
+  height: 160px; background: var(--raised); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+.vis-xp-bar { width: calc(100% - 2rem); padding: 0 1rem; }
+.xp-label { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+.xp-label span { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.16em; color: var(--ghost); }
+.xp-track { height: 5px; background: rgba(255,255,255,0.07); border-radius: 3px; position: relative; overflow: hidden; margin-bottom: 0.75rem; }
+.xp-fill { position:absolute; left:0; top:0; bottom:0; border-radius:3px; background: linear-gradient(90deg,var(--cyan),#0099CC); width: 0; transition: width 1.8s var(--ease); }
+.stat-mini-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 0.5rem; }
+.stat-mini { text-align: center; }
+.stat-mini-val { font-family:'Russo One',sans-serif; font-size:1rem; color:var(--cyan); }
+.stat-mini-key { font-size:0.48rem; font-weight:600; letter-spacing:0.16em; color:var(--ghost); }
+.vis-cone { display:flex; flex-direction:column; align-items:center; gap:1rem; }
+.cone-shape {
+  width:0; height:0;
+  border-left:30px solid transparent; border-right:30px solid transparent; border-bottom:55px solid var(--coral);
+  filter: drop-shadow(0 0 14px rgba(255,45,85,0.65));
+  animation: cone-pulse 2s ease-in-out infinite;
+}
+@keyframes cone-pulse { 0%,100%{filter:drop-shadow(0 0 14px rgba(255,45,85,0.65))} 50%{filter:drop-shadow(0 0 26px rgba(255,45,85,0.95))} }
+.cone-signal { display:flex; gap:0.5rem; align-items:center; }
+.cone-dot { width:6px; height:6px; border-radius:50%; background:var(--lime); animation:blink 1s ease-in-out infinite; }
+.cone-signal-text { font-size:0.62rem; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--lime); }
+.cone-data { font-family:'Russo One',sans-serif; font-size:1.7rem; color:var(--coral); letter-spacing:0.04em; }
+.cone-data-label { font-size:0.5rem; font-weight:600; letter-spacing:0.2em; color:var(--ghost); text-align:center; }
+.vis-imu { display:flex; align-items:center; justify-content:center; gap:2rem; width:100%; padding:0 1.5rem; }
+.imu-ring {
+  width:72px; height:72px; border-radius:50%; flex-shrink:0;
+  border: 2px solid rgba(255,214,10,0.35);
+  display:flex; align-items:center; justify-content:center; position:relative;
+  box-shadow: 0 0 18px rgba(255,214,10,0.12);
+  animation: imu-spin 4s linear infinite;
+}
+@keyframes imu-spin { to { transform: rotate(360deg); } }
+.imu-dot {
+  width:10px; height:10px; border-radius:50%; background:var(--gold);
+  box-shadow:0 0 10px var(--gold); position:absolute; top:4px; left:50%; margin-left:-5px;
+}
+.imu-data-col { display:flex; flex-direction:column; gap:0.5rem; }
+.imu-row { display:flex; align-items:center; gap:0.75rem; }
+.imu-axis { font-size:0.55rem; font-weight:600; letter-spacing:0.16em; color:var(--ghost); width:38px; }
+.imu-val { font-family:'Russo One',sans-serif; font-size:0.95rem; color:var(--gold); width:52px; text-align:right; }
+
+/* ── COME FUNZIONA ── */
+#come-funziona {
+  padding: 110px 0;
+  background: var(--deep);
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.flow-header { text-align: center; margin-bottom: 5rem; }
+.flow-steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; position: relative; }
+.flow-steps::before {
+  content: ''; position: absolute; top: 40px; left: calc(16.6% + 40px); right: calc(16.6% + 40px); height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+}
+.flow-step {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 2.25rem 1.5rem;
+  background: var(--panel); border: 1px solid var(--border);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+  transition: transform 0.3s var(--ease), border-color 0.3s, box-shadow 0.3s;
+  position: relative; z-index: 1; cursor: default;
+}
+.flow-step:hover { transform: translateY(-7px); border-color: rgba(0,212,255,0.25); box-shadow: 0 8px 40px rgba(0,212,255,0.08); }
+.step-num {
+  font-family: 'Russo One', sans-serif; font-size: 0.7rem; letter-spacing: 0.22em;
+  color: var(--cyan); margin-bottom: 1.25rem;
+  transition: text-shadow 0.3s;
+}
+.flow-step:hover .step-num { text-shadow: 0 0 14px var(--cyan); }
+.step-icon {
+  width: 72px; height: 72px; border-radius: 18px;
+  background: var(--raised); border: 1px solid rgba(0,212,255,0.18);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1.5rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.step-icon svg { width: 28px; height: 28px; stroke: var(--cyan); stroke-width: 1.6; fill: none; }
+.flow-step:hover .step-icon { border-color: rgba(0,212,255,0.45); box-shadow: 0 0 24px rgba(0,212,255,0.14); }
+.step-title { font-family: 'Russo One', sans-serif; font-size: 1.05rem; letter-spacing: 0.04em; margin-bottom: 0.9rem; }
+.step-desc { font-size: 0.8rem; color: var(--sub); line-height: 1.75; font-weight: 300; }
+
+/* ── MERCATO ── */
+#mercato { padding: 110px 0; overflow: hidden; }
+.mercato-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+.mercato-right { display: flex; flex-direction: column; gap: 1rem; }
+.market-stat-card {
+  padding: 1.5rem 2rem;
+  background: var(--panel); border: 1px solid var(--border); border-left: 2px solid var(--gold);
+  display: flex; align-items: center; gap: 1.5rem;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s;
+}
+.market-stat-card:hover { transform: translateX(5px); }
+.market-stat-card.c { border-left-color: var(--cyan); }
+.market-stat-card.r { border-left-color: var(--coral); }
+.market-stat-card:hover .msc-num { text-shadow: 0 0 22px currentColor; }
+.msc-num { font-family:'Russo One',sans-serif; font-size:2.2rem; letter-spacing:0.02em; color:var(--gold); white-space:nowrap; transition:text-shadow 0.3s; }
+.msc-num.c { color:var(--cyan); }
+.msc-num.r { color:var(--coral); }
+.msc-label { font-size: 0.78rem; color: var(--sub); line-height: 1.65; font-weight: 300; }
+.msc-label strong { display:block; font-weight:600; color:var(--text); font-size:0.82rem; margin-bottom:0.2rem; }
+
+/* ── TEAM ── */
+#team {
+  padding: 110px 0;
+  background: var(--deep);
+  border-top: 1px solid var(--border);
+}
+.team-header { text-align: center; margin-bottom: 4rem; }
+.team-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; align-items: start; }
+
+/* ─── FC25 Player Card ─── */
+.fc-member { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
+
+.fc-card {
+  position: relative; width: 200px; border-radius: 16px; overflow: hidden;
+  cursor: default; transition: transform 0.35s var(--spring), box-shadow 0.35s;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  background: linear-gradient(160deg,#2a1e0a 0%,#1a1206 40%,#0d0b05 100%);
+  border: 1.5px solid rgba(255,210,100,0.25);
+}
+.fc-card:hover { transform: translateY(-10px) scale(1.03); }
+.fc-card--cyan { background: linear-gradient(160deg,#062228 0%,#031519 40%,#020d10 100%); border-color:rgba(0,212,255,0.3); }
+.fc-card--gold { background: linear-gradient(160deg,#2a1e0a 0%,#1a1206 40%,#0d0b05 100%); border-color:rgba(255,214,10,0.35); }
+.fc-card--coral { background: linear-gradient(160deg,#280a0d 0%,#180507 40%,#0d0304 100%); border-color:rgba(255,45,85,0.3); }
+
+.fc-card-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255,214,10,0.06) 0%, transparent 70%);
+}
+.fc-card--cyan .fc-card-bg { background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(0,212,255,0.07) 0%, transparent 70%); }
+.fc-card--coral .fc-card-bg { background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255,45,85,0.06) 0%, transparent 70%); }
+
+.fc-ovr-block {
+  position: absolute; top: 12px; left: 14px; z-index: 5;
+  display: flex; flex-direction: column; align-items: center; line-height: 1;
+}
+.fc-ovr {
+  font-family: 'Russo One', sans-serif; font-size: 2rem; color: #FFD60A;
+  text-shadow: 0 0 12px rgba(255,214,10,0.6), 0 2px 4px rgba(0,0,0,0.8);
+}
+.fc-card--cyan .fc-ovr { color: #00D4FF; text-shadow: 0 0 12px rgba(0,212,255,0.6), 0 2px 4px rgba(0,0,0,0.8); }
+.fc-card--coral .fc-ovr { color: #FF6B8A; text-shadow: 0 0 12px rgba(255,45,85,0.6), 0 2px 4px rgba(0,0,0,0.8); }
+.fc-pos { font-family:'Chakra Petch',sans-serif; font-size:0.6rem; font-weight:700; letter-spacing:0.12em; color:#FFD60A; opacity:0.85; margin-top:2px; }
+.fc-card--cyan .fc-pos { color:#00D4FF; }
+.fc-card--coral .fc-pos { color:#FF6B8A; }
+
+.fc-photo-area {
+  display: flex; align-items: flex-end; justify-content: center;
+  height: 160px; position: relative; z-index: 2; padding-top: 16px;
+}
+.fc-avatar {
+  width: 100px; height: 100px; border-radius: 50%;
+  background: linear-gradient(135deg,rgba(255,214,10,0.2),rgba(255,214,10,0.05));
+  border: 2px solid rgba(255,214,10,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Russo One', sans-serif; font-size: 2.2rem;
+  color: rgba(255,255,255,0.9);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4), 0 0 30px rgba(255,214,10,0.08);
+}
+.fc-card--cyan .fc-avatar { background: linear-gradient(135deg,rgba(0,212,255,0.2),rgba(0,212,255,0.05)); border-color:rgba(0,212,255,0.35); box-shadow:0 4px 24px rgba(0,0,0,0.4),0 0 30px rgba(0,212,255,0.1); }
+.fc-card--coral .fc-avatar { background: linear-gradient(135deg,rgba(255,45,85,0.2),rgba(255,45,85,0.05)); border-color:rgba(255,45,85,0.35); box-shadow:0 4px 24px rgba(0,0,0,0.4),0 0 30px rgba(255,45,85,0.1); }
+
+.fc-card-footer {
+  padding: 10px 14px 14px; position: relative; z-index: 3;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.55) 100%);
+}
+.fc-player-name {
+  font-family:'Chakra Petch',sans-serif; font-style:italic; font-weight:700;
+  font-size:0.85rem; letter-spacing:0.04em; color:#fff;
+  text-align:center; margin-bottom:8px; text-transform:uppercase;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.8);
+}
+.fc-stats-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 3px 6px;
+  border-top: 1px solid rgba(255,255,255,0.1); padding-top: 7px;
+  margin-bottom: 7px;
+}
+.fc-stat { display:flex; flex-direction:column; align-items:center; gap:1px; }
+.fc-sk { font-family:'Chakra Petch',sans-serif; font-size:0.42rem; font-weight:600; letter-spacing:0.1em; color:rgba(255,255,255,0.45); text-transform:uppercase; }
+.fc-sv { font-family:'Russo One',sans-serif; font-size:0.82rem; color:#fff; line-height:1; }
+.fc-flag-row {
+  text-align: center; font-size: 0.7rem; color: rgba(255,255,255,0.5);
+  border-top: 1px solid rgba(255,255,255,0.08); padding-top: 5px;
+}
+.fc-lv { font-family:'Chakra Petch',sans-serif; font-weight:700; font-size:0.6rem; letter-spacing:0.12em; color:#FFD60A; }
+.fc-card--cyan .fc-lv { color:#00D4FF; }
+.fc-card--coral .fc-lv { color:#FF6B8A; }
+
+/* Info below card */
+.fc-info { text-align: center; }
+.fc-info-role { font-family:'Chakra Petch',sans-serif; font-size:0.6rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--ghost); margin-bottom:0.5rem; }
+.fc-info-skills { list-style:none; display:flex; flex-direction:column; gap:0.3rem; }
+.fc-info-skills li { font-size:0.7rem; font-weight:500; color:var(--sub); letter-spacing:0.02em; }
+
+/* ── WAITLIST ── */
+#waitlist { padding: 120px 0; position: relative; overflow: hidden; }
+#waitlist::before {
+  content: ''; position: absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width: 900px; height: 500px;
+  background: radial-gradient(ellipse, rgba(0,212,255,0.055) 0%, transparent 70%);
+  pointer-events: none;
+}
+/* Decorative lines */
+#waitlist::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0,212,255,0.06) 1px, transparent 1px),
+    linear-gradient(0deg,  rgba(0,212,255,0.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, black 40%, transparent 100%);
+  pointer-events: none;
+}
+.waitlist-inner { max-width: 580px; margin: 0 auto; text-align: center; position: relative; z-index: 1; }
+.waitlist-inner .section-title { margin-bottom: 1rem; }
+.waitlist-inner .section-body { margin-bottom: 2.5rem; }
+
+.waitlist-form { display: flex; gap: 0; max-width: 480px; margin: 0 auto 1.5rem; }
+.waitlist-input {
+  flex: 1; padding: 0.95rem 1.25rem;
+  background: var(--panel); border: 1px solid rgba(0,212,255,0.22); border-right: none;
+  color: var(--text); font-family: 'Chakra Petch', sans-serif; font-size: 0.875rem;
+  outline: none; transition: border-color 0.25s, box-shadow 0.25s;
+}
+.waitlist-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 1px var(--cyan); }
+.waitlist-input::placeholder { color: var(--ghost); }
+.waitlist-submit {
+  padding: 0.95rem 1.75rem;
+  background: linear-gradient(135deg, var(--cyan) 0%, #0099CC 100%);
+  color: var(--void); font-family: 'Russo One', sans-serif; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+  transition: transform 0.15s var(--ease), box-shadow 0.15s; border: none; cursor: pointer;
+}
+.waitlist-submit:hover { transform: translateY(-1px); box-shadow: 0 0 28px rgba(0,212,255,0.45); }
+.waitlist-note { font-size: 0.7rem; color: var(--ghost); font-weight: 300; }
+.waitlist-note a { color: var(--cyan); }
+.success-msg { display:none; padding:1rem 1.5rem; background:rgba(52,199,89,0.1); border:1px solid rgba(52,199,89,0.28); color:var(--lime); font-size:0.875rem; font-weight:600; border-radius:2px; }
+
+/* ── FOOTER ── */
+footer {
+  padding: 3rem 0 2rem;
+  border-top: 1px solid var(--border);
+  background: var(--void);
+}
+.footer-grid {
+  display: grid; grid-template-columns: 1fr auto; gap: 3rem; align-items: start;
+  margin-bottom: 2.5rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--border);
+}
+.footer-logo { font-family:'Russo One',sans-serif; font-size:1.4rem; letter-spacing:0.06em; margin-bottom:0.75rem; }
+.footer-logo em { color:var(--cyan); font-style:normal; }
+.footer-tagline { font-size:0.78rem; color:var(--ghost); font-weight:300; max-width:280px; line-height:1.65; }
+.footer-nav { display:flex; flex-direction:column; gap:0.75rem; }
+.footer-nav-label { font-size:0.6rem; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--ghost); margin-bottom:0.25rem; }
+.footer-nav a { font-size:0.78rem; color:var(--sub); transition:color 0.2s; }
+.footer-nav a:hover { color:var(--text); }
+.footer-bottom { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+.footer-copy { font-size:0.68rem; color:var(--ghost); font-weight:300; }
+.footer-badges { display:flex; gap:0.75rem; }
+.footer-badge {
+  padding: 0.3rem 0.75rem;
+  border: 1px solid var(--border); border-radius: 2px;
+  font-size: 0.6rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ghost);
+}
+
+/* ── SECTION BALL WATERMARKS ── */
+.section-ball { position:absolute; border-radius:50%; pointer-events:none; z-index:0; overflow:hidden; }
+.section-ball img { width:100%;height:100%;object-fit:contain;border-radius:50%;filter:blur(3px);opacity:0.055; }
+
+/* ── COUNTER ── */
+.count-up { display: inline-block; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  #ball-wrap { width: 460px; height: 460px; right: -80px; }
+}
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  #ball-wrap { width: 300px; height: 300px; right: -30px; top: 62%; opacity: 0.7; }
+  .chip-agility { display: none; }
+  .problema-grid, .mercato-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .prodotto-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .flow-steps { grid-template-columns: 1fr; }
+  .flow-steps::before { display: none; }
+  .team-grid { grid-template-columns: 1fr; max-width: 320px; margin: 0 auto; }
+  .fc-member { width: 100%; align-items: center; }
+  .fc-card { width: 200px; }
+  .fc-photo-area { height: 140px; }
+  .fc-avatar { width: 90px; height: 90px; font-size: 2rem; }
+  .nav-links, nav > .nav-cta { display: none; }
+  .hamburger { display: flex; }
+  .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+}
+@media (max-width: 600px) {
+  #ball-wrap { opacity: 0.4; }
+  .ball-chip { display: none; }
+  .scroll-indicator { display: none; }
+}
+@media (max-width: 480px) {
+  .hero-stats { gap: 1.5rem; }
+  .hero-actions { flex-direction: column; align-items: flex-start; }
+  .waitlist-form { flex-direction: column; }
+  .waitlist-input { border-right: 1px solid rgba(0,212,255,0.22); border-bottom: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="ambient" aria-hidden="true"></div>
+
+<a href="#main" style="position:absolute;top:-100%;left:1rem;background:var(--cyan);color:var(--void);padding:.5rem 1rem;font-weight:700;z-index:9999;border-radius:2px;transition:top .2s">Salta al contenuto</a>
+
+<!-- ── NAV ── -->
+<nav id="nav" aria-label="Navigazione principale">
+  <div class="nav-logo"><em>IN</em>SOCCER</div>
+  <ul class="nav-links">
+    <li><a href="#problema">Il Problema</a></li>
+    <li><a href="#prodotto">Il Prodotto</a></li>
+    <li><a href="#come-funziona">Come Funziona</a></li>
+    <li><a href="#team">Team</a></li>
+  </ul>
+  <a href="dashboard.html" style="padding:0.52rem 1.1rem;border:1px solid rgba(0,212,255,0.3);color:var(--cyan);font-family:'Russo One',sans-serif;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;margin-right:0.6rem;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);transition:box-shadow 0.15s">Genitori</a>
+  <a href="#waitlist" class="nav-cta">Entra in Beta</a>
+  <button class="hamburger" aria-expanded="false" aria-label="Apri menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#problema" class="mobile-nav-link">Il Problema</a>
+  <a href="#prodotto" class="mobile-nav-link">Il Prodotto</a>
+  <a href="#come-funziona" class="mobile-nav-link">Come Funziona</a>
+  <a href="#team" class="mobile-nav-link">Team</a>
+  <a href="#waitlist" class="nav-cta">Entra in Beta</a>
+</div>
+
+<main id="main">
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div id="hero-grid" aria-hidden="true">
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gf" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="white" stop-opacity="0"/>
+          <stop offset="35%" stop-color="white" stop-opacity="1"/>
+          <stop offset="100%" stop-color="white" stop-opacity="0.25"/>
+        </linearGradient>
+        <mask id="gm"><rect width="1440" height="900" fill="url(#gf)"/></mask>
+      </defs>
+      <g mask="url(#gm)" stroke="#00D4FF" stroke-width="0.7" fill="none">
+        <line x1="720" y1="180" x2="0"    y2="900"/>
+        <line x1="720" y1="180" x2="180"  y2="900"/>
+        <line x1="720" y1="180" x2="360"  y2="900"/>
+        <line x1="720" y1="180" x2="540"  y2="900"/>
+        <line x1="720" y1="180" x2="720"  y2="900"/>
+        <line x1="720" y1="180" x2="900"  y2="900"/>
+        <line x1="720" y1="180" x2="1080" y2="900"/>
+        <line x1="720" y1="180" x2="1260" y2="900"/>
+        <line x1="720" y1="180" x2="1440" y2="900"/>
+        <line x1="0" y1="340" x2="1440" y2="340" stroke-opacity="0.45"/>
+        <line x1="0" y1="460" x2="1440" y2="460" stroke-opacity="0.55"/>
+        <line x1="0" y1="580" x2="1440" y2="580" stroke-opacity="0.6"/>
+        <line x1="0" y1="720" x2="1440" y2="720" stroke-opacity="0.45"/>
+        <ellipse cx="720" cy="760" rx="280" ry="80" stroke-opacity="0.35"/>
+        <ellipse cx="720" cy="760" rx="120" ry="34" stroke-opacity="0.45"/>
+      </g>
+    </svg>
+  </div>
+
+  <div id="ball-scene" aria-hidden="true">
+    <div id="ball-wrap">
+      <div id="ball-glow"></div>
+      <div id="ball-hud-ring"></div>
+      <div id="ball-hud-ring2"></div>
+      <div class="ball-chip chip-speed"><div class="chip-val">94</div><div class="chip-key">VELOCITÀ</div></div>
+      <div class="ball-chip chip-power"><div class="chip-val">88</div><div class="chip-key">POTENZA</div></div>
+      <div class="ball-chip chip-agility"><div class="chip-val">91</div><div class="chip-key">AGILITÀ</div></div>
+      <img id="ball-img" src="ball.png" alt="" width="520" height="520">
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-tag" role="status">
+          <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>
+          LIVE BETA · STAGIONE 2025–26
+        </div>
+        <h1 class="hero-title">
+          IL CALCIO<br>
+          <span class="accent">DIVENTA</span><br>
+          <span class="outline">UN</span> <span class="accent-coral">GIOCO</span>
+        </h1>
+        <p class="hero-sub">
+          Ogni sprint tracciato. Ogni gol registrato. Il tuo avatar FC25 cresce con le tue performance reali — powered by InSoccer App e SmartCone.
+        </p>
+        <div class="hero-actions">
+          <a href="#waitlist" class="btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            Entra in Beta
+          </a>
+          <a href="#prodotto" class="btn-secondary">Scopri il Prodotto</a>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-stats" role="list">
+          <div role="listitem">
+            <div class="hero-stat-num"><span class="count-up" data-count="270" data-suffix="M">270M</span></div>
+            <div class="hero-stat-label">Giocatori nel mondo</div>
+          </div>
+          <div role="listitem">
+            <div class="hero-stat-num"><span class="count-up" data-count="0" data-suffix="">0</span></div>
+            <div class="hero-stat-label">Tool come il nostro</div>
+          </div>
+          <div role="listitem">
+            <div class="hero-stat-num"><span class="count-up" data-count="3.2" data-prefix="€" data-suffix="B">€3.2B</span></div>
+            <div class="hero-stat-label">Mercato addressabile</div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator" aria-hidden="true">
+    <span>Scorri</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ── IL PROBLEMA ── -->
+<section id="problema">
+  <div class="section-ball" style="width:400px;height:400px;right:-90px;bottom:-70px"><img src="ball.png" alt=""></div>
+  <div class="wrap">
+    <div class="problema-grid">
+      <div class="reveal">
+        <div class="eyebrow">Il Gap nel Mercato</div>
+        <h2 class="section-title">IL CALCIO<br>AMATORIALE<br>MERITA <span class="c">DI PIÙ</span></h2>
+        <p class="section-body">270 milioni di calciatori si allenano ogni giorno senza mai sapere quanto stiano migliorando. I professionisti hanno GPS, sensori, analytics — i dilettanti hanno un fischio e un cronometro. InSoccer chiude questo divario.</p>
+      </div>
+      <div class="pain-cards reveal reveal-delay-1">
+        <div class="pain-card">
+          <div class="pain-icon-box">
+            <!-- bar-chart icon -->
+            <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div>
+            <div class="pain-title">Nessun dato reale</div>
+            <div class="pain-desc">L'allenatore stima a occhio. Il giocatore non sa dove migliorare, né quanto è migliorato dalla settimana scorsa.</div>
+          </div>
+        </div>
+        <div class="pain-card">
+          <div class="pain-icon-box">
+            <!-- trending-down icon -->
+            <svg viewBox="0 0 24 24"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+          </div>
+          <div>
+            <div class="pain-title">Zero motivazione nel lungo periodo</div>
+            <div class="pain-desc">Senza progressione visibile, i calciatori amatoriali abbandonano. La gamification cambia la retention.</div>
+          </div>
+        </div>
+        <div class="pain-card">
+          <div class="pain-icon-box">
+            <!-- shield-off / gap icon -->
+            <svg viewBox="0 0 24 24"><path d="M19.69 14a6.9 6.9 0 0 0 .31-2V5l-8-3-3.16 1.18"/><path d="M4.73 4.73L4 5v7c0 6 8 10 8 10a20.29 20.29 0 0 0 5.62-4.38"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </div>
+          <div>
+            <div class="pain-title">Il gap pro vs amatore</div>
+            <div class="pain-desc">I club spendono migliaia in tech per ogni atleta. I dilettanti non hanno accesso a nulla di equivalente.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── IL PRODOTTO ── -->
+<section id="prodotto">
+  <div class="wrap">
+    <div class="prodotto-header reveal">
+      <div class="eyebrow" style="justify-content:center">Il Sistema InSoccer</div>
+      <h2 class="section-title">TRE PEZZI.<br><span class="c">UN</span> ECOSISTEMA</h2>
+    </div>
+    <div class="prodotto-grid">
+
+      <div class="product-block cyan-glow reveal reveal-delay-1">
+        <div class="product-header-bar">
+          <div class="product-icon cyan-bg">
+            <!-- smartphone icon -->
+            <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </div>
+          <div>
+            <div class="product-name">INSOCCER APP</div>
+            <div class="product-sub">iOS · Android · Web</div>
+          </div>
+        </div>
+        <div class="product-body">
+          <p class="product-desc">Il cervello del sistema. Ogni partita si trasforma in statistiche reali e progressione del tuo avatar FC25-style. Sfida i compagni, sali di livello, domina il campo.</p>
+          <div class="feature-list">
+            <div class="feature-item cyan-dot">Avatar personalizzabile con OVR reale</div>
+            <div class="feature-item cyan-dot">Dashboard statistiche post-partita</div>
+            <div class="feature-item cyan-dot">Sfide e classifiche multigiocatore</div>
+            <div class="feature-item cyan-dot">Percorsi di allenamento adattivi</div>
+            <div class="feature-item cyan-dot">Integrazione BLE con SmartCone</div>
+          </div>
+        </div>
+        <div class="product-visual">
+          <div class="vis-xp-bar" aria-label="Barra XP di esempio">
+            <div class="xp-label"><span>XP STAGIONE CORRENTE</span><span>LV 14</span></div>
+            <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
+            <div class="stat-mini-grid">
+              <div class="stat-mini"><div class="stat-mini-val">85</div><div class="stat-mini-key">PAC</div></div>
+              <div class="stat-mini"><div class="stat-mini-val">79</div><div class="stat-mini-key">TIR</div></div>
+              <div class="stat-mini"><div class="stat-mini-val">82</div><div class="stat-mini-key">PAS</div></div>
+              <div class="stat-mini"><div class="stat-mini-val">88</div><div class="stat-mini-key">DRI</div></div>
+              <div class="stat-mini"><div class="stat-mini-val">91</div><div class="stat-mini-key">RES</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-block coral-glow reveal reveal-delay-2">
+        <div class="product-header-bar">
+          <div class="product-icon coral-bg">
+            <!-- radio / signal icon -->
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+          </div>
+          <div>
+            <div class="product-name">SMARTCONE</div>
+            <div class="product-sub">Hardware IoT · BLE 5.0</div>
+          </div>
+        </div>
+        <div class="product-body">
+          <p class="product-desc">La <strong style="color:var(--text)">InSoccer Starter Box</strong> include 3 SmartCone, una cavigliera IMU e un tappetino smart. Si posiziona in campo in 60 secondi, sincronizza via BLE e traccia ogni movimento in tempo reale. Zero configurazione, zero fili.</p>
+          <div class="feature-list">
+            <div class="feature-item coral-dot">Rilevamento passaggio ±2cm di precisione</div>
+            <div class="feature-item coral-dot">Sensori IMU 6-DOF integrati</div>
+            <div class="feature-item coral-dot">BLE 5.0 · range 50m in campo aperto</div>
+            <div class="feature-item coral-dot">Batteria 12h di utilizzo continuo</div>
+            <div class="feature-item coral-dot">Resistente agli urti e alle intemperie</div>
+          </div>
+        </div>
+        <div class="product-visual">
+          <div class="vis-cone">
+            <div class="cone-shape"></div>
+            <div class="cone-signal">
+              <div class="cone-dot"></div>
+              <div class="cone-signal-text">BLE CONNESSO</div>
+            </div>
+            <div>
+              <div class="cone-data">0.28 s</div>
+              <div class="cone-data-label">TEMPO DI REAZIONE</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-block gold-glow reveal reveal-delay-3">
+        <div class="product-header-bar">
+          <div class="product-icon gold-bg">
+            <!-- activity / imu icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M17 8a5 5 0 0 0-10 0v8a5 5 0 0 0 10 0V8z" stroke="currentColor"/><line x1="12" y1="6" x2="12" y2="10" stroke="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>
+          </div>
+          <div>
+            <div class="product-name">CAVIGLIERA IMU</div>
+            <div class="product-sub">Sensore · 6-DOF · BLE 5.0</div>
+          </div>
+        </div>
+        <div class="product-body">
+          <p class="product-desc">Il sensore indossabile che trasforma ogni movimento in dato reale. Accelerometro + giroscopio 6-DOF integrati nella cavigliera: velocità, accelerazione, direzione e stile di corsa — tutto tracciato sul tuo avatar.</p>
+          <div class="feature-list">
+            <div class="feature-item gold-dot">IMU 6-DOF: accelerometro + giroscopio</div>
+            <div class="feature-item gold-dot">Rilevamento velocità e accelerazione</div>
+            <div class="feature-item gold-dot">Analisi stile di corsa e impatto</div>
+            <div class="feature-item gold-dot">Batteria 10h · ricarica USB-C</div>
+            <div class="feature-item gold-dot">Fascia regolabile taglia unica</div>
+          </div>
+        </div>
+        <div class="product-visual">
+          <div class="vis-imu">
+            <div class="imu-ring">
+              <div class="imu-dot"></div>
+            </div>
+            <div class="imu-data-col">
+              <div class="imu-row"><span class="imu-axis">ACC X</span><span class="imu-val" id="accX">0.00</span></div>
+              <div class="imu-row"><span class="imu-axis">ACC Y</span><span class="imu-val" id="accY">0.00</span></div>
+              <div class="imu-row"><span class="imu-axis">GYR Z</span><span class="imu-val" id="gyrZ">0.00</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── COME FUNZIONA ── -->
+<section id="come-funziona">
+  <div class="section-ball" style="width:480px;height:480px;left:-110px;top:50%;margin-top:-240px"><img src="ball.png" alt=""></div>
+  <div class="wrap">
+    <div class="flow-header reveal">
+      <div class="eyebrow" style="justify-content:center">Il Flusso</div>
+      <h2 class="section-title">COME <span class="c">FUNZIONA</span></h2>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step reveal reveal-delay-1">
+        <div class="step-num">STEP 01</div>
+        <div class="step-icon">
+          <!-- settings icon -->
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <div class="step-title">POSIZIONA IL CONE</div>
+        <p class="step-desc">Metti lo SmartCone in campo, accendilo. Si connette automaticamente all'app via BLE in meno di 3 secondi. Zero configurazione, zero fili.</p>
+      </div>
+      <div class="flow-step reveal reveal-delay-2">
+        <div class="step-num">STEP 02</div>
+        <div class="step-icon">
+          <!-- activity icon -->
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="step-title">ALLENA E GIOCA</div>
+        <p class="step-desc">I sensori rilevano velocità, direzione, tempi di reazione e ogni passaggio. L'app aggrega tutto in tempo reale mentre tu ti concentri sul campo.</p>
+      </div>
+      <div class="flow-step reveal reveal-delay-3">
+        <div class="step-num">STEP 03</div>
+        <div class="step-icon">
+          <!-- trending-up icon -->
+          <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </div>
+        <div class="step-title">CRESCI E SFIDA</div>
+        <p class="step-desc">Il tuo avatar si aggiorna con statistiche reali. Scala le classifiche, completa le sfide, guadagna XP. Ogni sessione conta.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MERCATO ── -->
+<section id="mercato">
+  <div class="section-ball" style="width:360px;height:360px;right:-50px;top:50%;margin-top:-180px"><img src="ball.png" alt=""></div>
+  <div class="wrap">
+    <div class="mercato-grid">
+      <div class="reveal">
+        <div class="eyebrow">Opportunità di Mercato</div>
+        <h2 class="section-title">UN MERCATO<br><span class="r">ENORME</span><br>E IGNORATO</h2>
+        <p class="section-body">Il mercato degli sport amateur non ha ancora visto una soluzione che unisca hardware, software e gamification in modo accessibile. InSoccer è posizionato esattamente in quel vuoto.</p>
+        <a href="#waitlist" class="btn-primary" style="display:inline-flex">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Unisciti alla Beta
+        </a>
+      </div>
+      <div class="mercato-right reveal reveal-delay-1">
+        <div class="market-stat-card">
+          <div class="msc-num">270M</div>
+          <div class="msc-label"><strong>Calciatori globali</strong>Giocatori semi-pro e amatoriali che si allenano regolarmente.</div>
+        </div>
+        <div class="market-stat-card c">
+          <div class="msc-num c">€3.2B</div>
+          <div class="msc-label"><strong>TAM</strong>Sport tech + wearables + gamification per il calcio dilettantistico in Europa.</div>
+        </div>
+        <div class="market-stat-card r">
+          <div class="msc-num r">40%</div>
+          <div class="msc-label"><strong>Abbandono 15–25 anni</strong>Il problema che risolviamo: zero progressione visibile.</div>
+        </div>
+        <div class="market-stat-card" style="border-left-color:var(--lime)">
+          <div class="msc-num" style="color:var(--lime)">€169</div>
+          <div class="msc-label"><strong>InSoccer Starter Box</strong>3 SmartCone + cavigliera IMU + tappetino. Revenue ricorrente via Premium a €4.99/mese.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TEAM ── -->
+<section id="team">
+  <div class="wrap">
+    <div class="team-header reveal">
+      <div class="eyebrow" style="justify-content:center">I Fondatori</div>
+      <h2 class="section-title">IL NOSTRO <span class="c">TEAM</span></h2>
+      <p style="color:var(--sub);font-size:.88rem;max-width:480px;margin:.75rem auto 0;line-height:1.8;font-weight:300">Hardware, software e visione strategica. Tre competenze complementari, un unico obiettivo.</p>
+    </div>
+    <div class="team-grid">
+
+      <!-- GABRIELE -->
+      <div class="fc-member reveal reveal-delay-1">
+        <div class="fc-card fc-card--gold">
+          <div class="fc-card-bg"></div>
+          <div class="fc-ovr-block">
+            <div class="fc-ovr">55</div>
+            <div class="fc-pos">CF</div>
+          </div>
+          <div class="fc-photo-area">
+            <div class="fc-avatar" aria-label="Gabriele Casati">G</div>
+          </div>
+          <div class="fc-card-footer">
+            <div class="fc-player-name">Gabriele Casati</div>
+            <div class="fc-stats-grid">
+              <div class="fc-stat"><span class="fc-sk">PAC</span><span class="fc-sv">58</span></div>
+              <div class="fc-stat"><span class="fc-sk">SHO</span><span class="fc-sv">54</span></div>
+              <div class="fc-stat"><span class="fc-sk">PAS</span><span class="fc-sv">56</span></div>
+              <div class="fc-stat"><span class="fc-sk">DRI</span><span class="fc-sv">60</span></div>
+              <div class="fc-stat"><span class="fc-sk">DEF</span><span class="fc-sv">40</span></div>
+              <div class="fc-stat"><span class="fc-sk">PHY</span><span class="fc-sv">52</span></div>
+            </div>
+            <div class="fc-flag-row">🇮🇹 <span class="fc-lv">LV 1</span></div>
+          </div>
+        </div>
+        <div class="fc-info">
+          <div class="fc-info-role">Co-founder</div>
+          <ul class="fc-info-skills">
+            <li>Hardware Engineer</li>
+            <li>Embedded Systems</li>
+            <li>BLE • IMU Sensors</li>
+            <li>Electronics Design</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- LEONE -->
+      <div class="fc-member reveal reveal-delay-2">
+        <div class="fc-card fc-card--gold">
+          <div class="fc-card-bg"></div>
+          <div class="fc-ovr-block">
+            <div class="fc-ovr">55</div>
+            <div class="fc-pos">CF</div>
+          </div>
+          <div class="fc-photo-area">
+            <div class="fc-avatar" aria-label="Leone Ormellese">L</div>
+          </div>
+          <div class="fc-card-footer">
+            <div class="fc-player-name">Leone Ormellese</div>
+            <div class="fc-stats-grid">
+              <div class="fc-stat"><span class="fc-sk">PAC</span><span class="fc-sv">58</span></div>
+              <div class="fc-stat"><span class="fc-sk">SHO</span><span class="fc-sv">54</span></div>
+              <div class="fc-stat"><span class="fc-sk">PAS</span><span class="fc-sv">56</span></div>
+              <div class="fc-stat"><span class="fc-sk">DRI</span><span class="fc-sv">60</span></div>
+              <div class="fc-stat"><span class="fc-sk">DEF</span><span class="fc-sv">40</span></div>
+              <div class="fc-stat"><span class="fc-sk">PHY</span><span class="fc-sv">52</span></div>
+            </div>
+            <div class="fc-flag-row">🇮🇹 <span class="fc-lv">LV 1</span></div>
+          </div>
+        </div>
+        <div class="fc-info">
+          <div class="fc-info-role">Co-founder</div>
+          <ul class="fc-info-skills">
+            <li>Full-Stack Dev</li>
+            <li>Game Dev Experience</li>
+            <li>App Architecture</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- NICOLÒ -->
+      <div class="fc-member reveal reveal-delay-3">
+        <div class="fc-card fc-card--gold">
+          <div class="fc-card-bg"></div>
+          <div class="fc-ovr-block">
+            <div class="fc-ovr">55</div>
+            <div class="fc-pos">CF</div>
+          </div>
+          <div class="fc-photo-area">
+            <div class="fc-avatar" aria-label="Malavasi Nicolò">N</div>
+          </div>
+          <div class="fc-card-footer">
+            <div class="fc-player-name">Malavasi Nicolò</div>
+            <div class="fc-stats-grid">
+              <div class="fc-stat"><span class="fc-sk">PAC</span><span class="fc-sv">58</span></div>
+              <div class="fc-stat"><span class="fc-sk">SHO</span><span class="fc-sv">54</span></div>
+              <div class="fc-stat"><span class="fc-sk">PAS</span><span class="fc-sv">56</span></div>
+              <div class="fc-stat"><span class="fc-sk">DRI</span><span class="fc-sv">60</span></div>
+              <div class="fc-stat"><span class="fc-sk">DEF</span><span class="fc-sv">40</span></div>
+              <div class="fc-stat"><span class="fc-sk">PHY</span><span class="fc-sv">52</span></div>
+            </div>
+            <div class="fc-flag-row">🇮🇹 <span class="fc-lv">LV 1</span></div>
+          </div>
+        </div>
+        <div class="fc-info">
+          <div class="fc-info-role">Co-founder</div>
+          <ul class="fc-info-skills">
+            <li>Creator &amp; Strategy</li>
+            <li>Design Thinking</li>
+            <li>IED (Istituto Europeo)</li>
+            <li>Storytelling</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── WAITLIST ── -->
+<section id="waitlist">
+  <div class="wrap">
+    <div class="waitlist-inner reveal">
+      <div class="eyebrow" style="justify-content:center">Accesso Anticipato</div>
+      <h2 class="section-title">ENTRA IN <span class="c">BETA</span></h2>
+      <p class="section-body">Stiamo selezionando i primi giocatori per la beta chiusa. Lascia la tua email: sarai tra i primi a ricevere la Starter Box (3 SmartCone + cavigliera IMU + tappetino) e l'accesso all'app.</p>
+      <form class="waitlist-form" id="waitlistForm" novalidate>
+        <label for="emailInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Indirizzo email</label>
+        <input class="waitlist-input" type="email" id="emailInput" name="email" placeholder="la-tua-email@esempio.com" autocomplete="email" required>
+        <button type="submit" class="waitlist-submit">Unisciti</button>
+      </form>
+      <div class="success-msg" id="successMsg" role="status" aria-live="polite">
+        ✓ Sei in lista! Ti contatteremo presto.
+      </div>
+      <p class="waitlist-note">Nessuno spam. Solo aggiornamenti sul lancio.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo"><em>IN</em>SOCCER</div>
+        <p class="footer-tagline">La piattaforma che trasforma il calcio amatoriale in un'esperienza da videogioco.</p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <div class="footer-nav-label">Navigazione</div>
+        <a href="#problema">Il Problema</a>
+        <a href="#prodotto">Il Prodotto</a>
+        <a href="#come-funziona">Come Funziona</a>
+        <a href="#team">Team</a>
+        <a href="#waitlist">Beta</a>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 InSoccer. Tutti i diritti riservati. IED Milano.</p>
+      <div class="footer-badges">
+        <span class="footer-badge">BLE 5.0</span>
+        <span class="footer-badge">IMU Sensors</span>
+        <span class="footer-badge">FC25 Style</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── NAV ──
+const nav = document.getElementById('nav');
+
+// ── GLITCH DATA-TEXT ──
+document.querySelectorAll('.section-title').forEach(el => { el.dataset.text = el.textContent; });
+
+// ── ANIMATED COUNTERS ──
+function animateCount(el, target, suffix, prefix, dur) {
+  const t0 = performance.now();
+  const isFloat = String(target).includes('.');
+  (function tick(now) {
+    const p = Math.min((now - t0) / dur, 1);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = prefix + (isFloat ? (e * target).toFixed(1) : Math.round(e * target)) + suffix;
+    if (p < 1) requestAnimationFrame(tick);
+  })(t0);
+}
+const counterIo = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (!en.isIntersecting) return;
+    const el = en.target;
+    animateCount(el, parseFloat(el.dataset.count), el.dataset.suffix || '', el.dataset.prefix || '', 1800);
+    counterIo.unobserve(el);
+  });
+}, { threshold: 0.5 });
+
+// ── BALL PARALLAX ──
+const ballWrap = document.getElementById('ball-wrap');
+const ballImg  = document.getElementById('ball-img');
+let rot = 0, lastY = 0, raf = null;
+
+function updateBall() {
+  const sy = window.scrollY;
+  rot += (sy - lastY) * 0.18;
+  lastY = sy;
+  ballWrap.style.transform = `translateY(calc(-50% + ${sy * 0.4}px))`;
+  ballImg.style.transform  = `rotate(${rot}deg)`;
+  raf = null;
+}
+
+const onScroll = () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+  if (!raf) raf = requestAnimationFrame(updateBall);
+};
+window.addEventListener('scroll', onScroll, { passive: true });
+
+// ── HAMBURGER ──
+const burger = document.querySelector('.hamburger');
+const mm = document.getElementById('mobile-menu');
+burger.addEventListener('click', () => {
+  const open = mm.classList.toggle('open');
+  burger.setAttribute('aria-expanded', open);
+});
+document.querySelectorAll('.mobile-nav-link, .mobile-menu .nav-cta').forEach(l => {
+  l.addEventListener('click', () => { mm.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); });
+});
+
+// ── REVEAL + SKILL BARS ──
+const io = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (!en.isIntersecting) return;
+    en.target.classList.add('visible');
+    en.target.querySelectorAll('.skill-fill[data-w]').forEach(b => { b.style.width = b.dataset.w + '%'; });
+    io.unobserve(en.target);
+  });
+}, { threshold: 0.14 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+document.querySelectorAll('.count-up[data-count]').forEach(el => counterIo.observe(el));
+
+// ── XP BAR ──
+const xpIo = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (!en.isIntersecting) return;
+    document.getElementById('xpFill').style.width = '72%';
+    xpIo.unobserve(en.target);
+  });
+}, { threshold: 0.3 });
+const xpEl = document.getElementById('xpFill');
+if (xpEl) xpIo.observe(xpEl.closest('.product-visual'));
+
+// ── WAITLIST ──
+const form = document.getElementById('waitlistForm');
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const email = document.getElementById('emailInput').value.trim();
+  if (!email || !email.includes('@')) { document.getElementById('emailInput').focus(); return; }
+  form.style.display = 'none';
+  document.getElementById('successMsg').style.display = 'block';
+  // ponytail: no backend — wire to real endpoint before launch
+});
+
+// ── IMU LIVE VALUES ──
+const imuEls = { accX: document.getElementById('accX'), accY: document.getElementById('accY'), gyrZ: document.getElementById('gyrZ') };
+if (imuEls.accX) {
+  setInterval(() => {
+    imuEls.accX.textContent = ((Math.random() - 0.5) * 4).toFixed(2);
+    imuEls.accY.textContent = ((Math.random() - 0.5) * 6).toFixed(2);
+    imuEls.gyrZ.textContent = ((Math.random() - 0.5) * 120).toFixed(1);
+  }, 600);
+}
+
+// ── SMOOTH SCROLL ──
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (!t) return;
+    e.preventDefault();
+    window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
+  });
+});
+</script>
+
+<!-- ⚽ Soccer Ball -->
+<canvas id="soccer-ball" aria-hidden="true" width="80" height="80"></canvas>
+
+<style>
+#soccer-ball {
+  position: fixed; z-index: 9999;
+  pointer-events: none !important;
+  user-select: none;
+  width: 80px; height: 80px;
+  will-change: transform;
+}
+</style>
+
+<script>
+const s = document.createElement('script');
+s.src = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
+s.onload = initBall;
+document.head.appendChild(s);
+function initBall() {
+(function() {
+  /* ── build soccer ball texture on a canvas ── */
+  function makeBallTexture() {
+    const S = 512;
+    const c = document.createElement('canvas');
+    c.width = c.height = S;
+    const g = c.getContext('2d');
+
+    // white base
+    g.fillStyle = '#f5f5f5';
+    g.fillRect(0, 0, S, S);
+
+    // Classic Telstar UV layout:
+    // 12 black pentagons, 20 white hexagons
+    // We approximate with a flat tiling that wraps decently on a sphere
+
+    const cx = S / 2, cy = S / 2;
+
+    // pentagon / hexagon size in texture space
+    const R = S * 0.13;
+
+    function hexPts(ox, oy, r, rot) {
+      const pts = [];
+      for (let i = 0; i < 6; i++) {
+        const a = (Math.PI / 3) * i + rot;
+        pts.push([ox + r * Math.cos(a), oy + r * Math.sin(a)]);
+      }
+      return pts;
+    }
+    function pentPts(ox, oy, r, rot) {
+      const pts = [];
+      for (let i = 0; i < 5; i++) {
+        const a = (2 * Math.PI / 5) * i + rot;
+        pts.push([ox + r * Math.cos(a), oy + r * Math.sin(a)]);
+      }
+      return pts;
+    }
+    function drawPoly(pts, fill) {
+      g.beginPath();
+      g.moveTo(pts[0][0], pts[0][1]);
+      pts.slice(1).forEach(p => g.lineTo(p[0], p[1]));
+      g.closePath();
+      g.fillStyle = fill;
+      g.fill();
+      g.strokeStyle = '#222';
+      g.lineWidth = 6;
+      g.stroke();
+    }
+
+    // Center pentagon (black)
+    drawPoly(pentPts(cx, cy, R * 0.85, -Math.PI / 2), '#111');
+
+    // 5 hexagons around center
+    for (let i = 0; i < 5; i++) {
+      const a = (2 * Math.PI / 5) * i - Math.PI / 2;
+      const hx = cx + R * 1.72 * Math.cos(a);
+      const hy = cy + R * 1.72 * Math.sin(a);
+      drawPoly(hexPts(hx, hy, R * 0.88, a + Math.PI / 6), '#e8e8e8');
+    }
+
+    // 5 pentagons between those hexagons
+    for (let i = 0; i < 5; i++) {
+      const a = (2 * Math.PI / 5) * i - Math.PI / 2 + Math.PI / 5;
+      const px = cx + R * 2.95 * Math.cos(a);
+      const py = cy + R * 2.95 * Math.sin(a);
+      drawPoly(pentPts(px, py, R * 0.82, a - Math.PI / 10), '#111');
+    }
+
+    // outer ring of hexagons (top/bottom strip for UV poles)
+    for (let i = 0; i < 10; i++) {
+      const a = (2 * Math.PI / 10) * i;
+      const hx = cx + R * 3.8 * Math.cos(a);
+      const hy = cy + R * 3.8 * Math.sin(a);
+      drawPoly(hexPts(hx, hy, R * 0.88, a), '#e8e8e8');
+    }
+
+    // subtle leather grain overlay
+    for (let i = 0; i < 600; i++) {
+      const gx = Math.random() * S, gy = Math.random() * S;
+      g.beginPath();
+      g.arc(gx, gy, Math.random() * 1.2, 0, Math.PI * 2);
+      g.fillStyle = 'rgba(0,0,0,0.04)';
+      g.fill();
+    }
+
+    return c;
+  }
+
+  /* ── Three.js ── */
+  const canvas = document.getElementById('soccer-ball');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(80, 80);
+  renderer.setClearColor(0x000000, 0);
+  renderer.shadowMap.enabled = false;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+  camera.position.z = 3.0;
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.4);
+  sun.position.set(3, 4, 5);
+  scene.add(sun);
+  const fill = new THREE.DirectionalLight(0xddeeff, 0.4);
+  fill.position.set(-3, -2, 2);
+  scene.add(fill);
+  const glowLight = new THREE.PointLight(0x00d4ff, 0, 4);
+  scene.add(glowLight);
+
+  const tex = new THREE.CanvasTexture(makeBallTexture());
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const geo = new THREE.SphereGeometry(1, 64, 64);
+  const mat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.6, metalness: 0.0 });
+  const mesh = new THREE.Mesh(geo, mat);
+  scene.add(mesh);
+
+  /* ── physics ── */
+  const R = 40;
+  let x = window.innerWidth * 0.82, y = window.innerHeight * 0.5;
+  let vx = -2.5, vy = -1.8, prevMX = 0, prevMY = 0;
+  const SPEED = 7, BOUNCE = 0.95;
+  const COLLIDE_SEL = '.fc-card,.pain-card,.product-block,.market-stat-card,.waitlist-inner,#nav';
+
+  function getObstacles() {
+    return Array.from(document.querySelectorAll(COLLIDE_SEL)).map(el => {
+      const r = el.getBoundingClientRect();
+      return { left: r.left, right: r.right, top: r.top, bottom: r.bottom };
+    }).filter(r => r.right > 0 && r.left < window.innerWidth && r.bottom > 0 && r.top < window.innerHeight);
+  }
+
+  function collideSAT(rect) {
+    const cx = Math.max(rect.left, Math.min(x, rect.right));
+    const cy = Math.max(rect.top,  Math.min(y, rect.bottom));
+    const dx = x - cx, dy = y - cy;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist >= R) return;
+    const nx = dist === 0 ? 1 : dx/dist, ny = dist === 0 ? 0 : dy/dist;
+    x += nx*(R-dist); y += ny*(R-dist);
+    const dot = vx*nx + vy*ny;
+    vx = (vx - 2*dot*nx)*BOUNCE; vy = (vy - 2*dot*ny)*BOUNCE;
+    glow();
+  }
+
+  function glow() {
+    glowLight.intensity = 2.5;
+    setTimeout(() => { glowLight.intensity = 0; }, 420);
+  }
+
+  const rotAxis = new THREE.Vector3();
+
+  function tick() {
+    // lerp speed toward SPEED — fast kick stays fast, gradually returns to base
+    const spd = Math.sqrt(vx*vx + vy*vy);
+    if (spd > 0.1) {
+      const target = Math.max(SPEED, spd * 0.978); // decay toward SPEED, never below
+      vx = vx/spd * target;
+      vy = vy/spd * target;
+    } else {
+      vx = SPEED * 0.7; vy = -SPEED * 0.7; // nudge if nearly stopped
+    }
+    x += vx; y += vy;
+
+    if (x-R < 0)               { x = R;                    vx *= -BOUNCE; glow(); }
+    if (x+R > window.innerWidth)  { x = window.innerWidth-R;  vx *= -BOUNCE; glow(); }
+    if (y-R < 0)               { y = R;                    vy *= -BOUNCE; glow(); }
+    if (y+R > window.innerHeight) { y = window.innerHeight-R; vy *= -BOUNCE; glow(); }
+
+    getObstacles().forEach(collideSAT);
+
+    canvas.style.left = (x-R) + 'px';
+    canvas.style.top  = (y-R) + 'px';
+
+    const speed = Math.sqrt(vx*vx + vy*vy);
+    if (speed > 0.05) {
+      rotAxis.set(-vy, vx, 0).normalize();
+      mesh.rotateOnWorldAxis(rotAxis, speed * 0.045);
+    }
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+
+  function handlePointer(cx, cy) {
+    const dx = cx - x, dy = cy - y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist < 65) {
+      const mvx = cx - prevMX, mvy = cy - prevMY;
+      const spd = Math.sqrt(mvx*mvx + mvy*mvy);
+      if (spd > 3) {
+        const force = Math.min(spd * 0.75, 20);
+        vx = (mvx/spd) * force;
+        vy = (mvy/spd) * force;
+        glow();
+      }
+    }
+    prevMX = cx; prevMY = cy;
+  }
+
+  document.addEventListener('mousemove', e => handlePointer(e.clientX, e.clientY));
+  document.addEventListener('touchmove', e => {
+    handlePointer(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+
+  requestAnimationFrame(tick);
+})();
+} // end initBall
+</script>
+</body>
+</html>
