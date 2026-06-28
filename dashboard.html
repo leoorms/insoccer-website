@@ -83,7 +83,9 @@ document.getElementById('login-form').addEventListener('submit', async e => {
 });
 
 // ── LOGOUT ──
-document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+document.getElementById('logout-btn').addEventListener('click', () =>
+  signOut(auth).then(() => { window.location.href = 'index.html'; })
+);
 
 // ── DEMO MODE ──
 document.getElementById('demo-btn').addEventListener('click', () => {
@@ -530,7 +532,7 @@ tr:hover td{background:rgba(0,212,255,0.025);color:var(--text)}
 <!-- ── DASHBOARD ── -->
 <div id="dashboard">
   <nav class="db-nav">
-    <div class="db-logo"><em>IN</em>SOCCER <span>Dashboard Genitore</span></div>
+    <a href="index.html" class="db-logo" style="text-decoration:none;color:inherit"><em>IN</em>SOCCER <span>Dashboard Genitore</span></a>
     <div class="db-right">
       <span id="user-email"></span>
       <button id="logout-btn">Esci</button>
