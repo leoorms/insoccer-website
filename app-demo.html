@@ -5,39 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>InSoccer — App Demo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --void:   #05060A;
-  --bg:     #060810;
-  --bgmid:  #0D1120;
-  --bghi:   #141828;
-  --border: rgba(255,255,255,0.07);
-  --stroke: rgba(255,255,255,0.07);
-  --text:   #F0F2F8;
-  --sub:    #8B92A8;
-  --low:    #3A3F52;
-  --cyan:   #00D4FF;
-  --coral:  #FF2D55;
-  --gold:   #FFD700;
-  --lime:   #39FF14;
-  --teal:   #00CED1;
-  --ease:   cubic-bezier(0.22,1,0.36,1);
-}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:16px}
+:root{
+  --void:#05060A;--bg:#060810;--bgmid:#0D1120;--border:rgba(255,255,255,.07);
+  --text:#F0F2F8;--sub:#8B92A8;--low:#3A3F52;
+  --cyan:#00D4FF;--coral:#FF2D55;--gold:#FFD700;
+  --ease:cubic-bezier(0.22,1,0.36,1);
+}
 body{background:var(--void);color:var(--text);font-family:'Chakra Petch',system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
 
-/* ── OUTER NAV ── */
-#outernav{position:fixed;top:0;left:0;right:0;z-index:200;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(5,6,10,0.96);border-bottom:1px solid var(--border);backdrop-filter:blur(12px)}
+/* NAV */
+#outernav{position:fixed;top:0;left:0;right:0;z-index:200;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(5,6,10,.96);border-bottom:1px solid var(--border);backdrop-filter:blur(12px)}
 .nav-logo{font-family:'Russo One',sans-serif;font-size:1.25rem;letter-spacing:.06em;text-decoration:none;color:var(--text)}
 .nav-logo em{color:var(--cyan);font-style:normal}
 .nav-back{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);text-decoration:none;transition:color .2s}
 .nav-back:hover{color:var(--cyan)}
 .nav-badge{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);border:1px solid rgba(0,212,255,.3);padding:.22rem .65rem;clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%)}
 
-/* ── PAGE ── */
+/* PAGE */
 .page-wrap{padding-top:76px;padding-bottom:60px;display:flex;flex-direction:column;align-items:center;min-height:100vh}
 .page-header{text-align:center;margin-bottom:2.5rem;padding:0 1rem}
 .eyebrow{display:flex;align-items:center;justify-content:center;gap:.6rem;font-size:.62rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);margin-bottom:.9rem}
@@ -46,300 +33,58 @@ body{background:var(--void);color:var(--text);font-family:'Chakra Petch',system-
 .page-header h1 span{color:var(--cyan)}
 .page-header p{color:var(--sub);font-size:.88rem;max-width:420px;margin:0 auto}
 
-/* ── PHONE ── */
+/* PHONE */
 .phone-scene{position:relative;display:flex;justify-content:center}
-.phone-frame{width:375px;height:780px;background:var(--bg);border-radius:48px;border:2px solid rgba(255,255,255,.13);box-shadow:0 0 0 1px rgba(0,0,0,.8),0 40px 80px rgba(0,0,0,.7),0 0 50px rgba(0,212,255,.07),inset 0 1px 0 rgba(255,255,255,.06);position:relative;overflow:hidden}
-.phone-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:118px;height:33px;background:var(--bg);border-radius:0 0 18px 18px;z-index:50;border-bottom:1px solid rgba(255,255,255,.05)}
-.phone-screen{width:100%;height:100%;border-radius:46px;overflow:hidden;position:relative}
+.phone-frame{width:320px;height:664px;background:#000;border-radius:46px;border:2px solid rgba(255,255,255,.15);box-shadow:0 0 0 1px rgba(0,0,0,.8),0 40px 80px rgba(0,0,0,.7),0 0 50px rgba(0,212,255,.07),inset 0 1px 0 rgba(255,255,255,.06);position:relative;overflow:hidden}
+.phone-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100px;height:28px;background:#000;border-radius:0 0 16px 16px;z-index:50}
+.phone-screen{width:100%;height:100%;border-radius:44px;overflow:hidden;position:relative;background:#000}
 
-/* ── SCREENS ── */
-.screen{position:absolute;inset:0;background:var(--bg);display:none;flex-direction:column;opacity:0;transition:opacity .25s var(--ease)}
-.screen.active{display:flex;opacity:1}
+/* SCREENS */
+.screen{position:absolute;inset:0;display:none;opacity:0;transition:opacity .22s var(--ease)}
+.screen.active{display:block;opacity:1}
+.screen img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
 
-/* status bar */
-.sb{height:42px;padding:12px 20px 0;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;position:relative;z-index:10}
-.sb-time{font-size:.7rem;font-weight:700}
-.sb-icons{font-size:.58rem;color:var(--sub)}
+/* CLICKABLE TAB OVERLAY over the bottom tab bar in each screenshot */
+.tab-overlay{position:absolute;bottom:0;left:0;right:0;height:72px;display:flex;z-index:10}
+.tab-tap{flex:1;cursor:pointer;background:transparent}
 
-/* scrollable content */
-.sc{flex:1;overflow-y:auto;overflow-x:hidden}
-.sc::-webkit-scrollbar{display:none}
+/* ONBOARDING DOTS */
+.onb-dots{position:absolute;bottom:82px;left:0;right:0;display:flex;justify-content:center;gap:6px;z-index:10;pointer-events:none}
+.onb-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25);transition:background .2s,width .2s}
+.onb-dot.active{background:var(--cyan);width:18px;border-radius:3px}
 
-/* ── FC25 TAB BAR ── */
-.tabbar{height:76px;background:var(--bg);border:none;position:relative;display:flex;align-items:stretch;flex-shrink:0}
-.tabbar::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,var(--cyan),rgba(0,212,255,.4),rgba(255,45,85,.6),var(--coral));box-shadow:0 0 6px rgba(0,212,255,.4)}
-.tabbar::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,212,255,.05) 0%,transparent 60%);pointer-events:none}
-.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;position:relative;border:none;background:transparent;padding-bottom:6px}
-.tab-item .tab-bg{position:absolute;inset:4px 2px;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);background:transparent;transition:background .2s}
-.tab-item.active .tab-bg{background:linear-gradient(to bottom,rgba(0,212,255,.16),rgba(0,212,255,.04));outline:1px solid rgba(0,212,255,.4);box-shadow:0 0 10px rgba(0,212,255,.15)}
-.tab-icon{font-size:.95rem;opacity:.35;transition:opacity .2s,filter .2s;position:relative;z-index:1}
-.tab-item.active .tab-icon{opacity:1;filter:drop-shadow(0 0 5px var(--cyan))}
-.tab-label{font-size:.5rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--low);position:relative;z-index:1;transition:color .2s}
-.tab-item.active .tab-label{color:#fff}
-.tab-divider{width:1px;background:rgba(255,255,255,.07);transform:skewX(-15deg);margin:10px 0;flex-shrink:0}
+/* ONBOARDING NAV */
+.onb-nav{position:absolute;bottom:14px;left:0;right:0;display:flex;justify-content:space-between;padding:0 18px;z-index:10}
+.onb-btn{background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.65);font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;cursor:pointer;clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);transition:color .2s,border-color .2s;font-family:'Chakra Petch',sans-serif}
+.onb-btn:hover{color:#fff;border-color:var(--cyan)}
+.onb-btn.hidden{opacity:0;pointer-events:none}
 
-/* ── SHAPES ── */
-/* Skew parallelogram */
-.skew{clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
-.skew-sm{clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%)}
-/* ChamferRect topRight */
-.chamfer-tr{clip-path:polygon(0% 0%,calc(100% - 14px) 0%,100% 14px,100% 100%,0% 100%)}
-.chamfer-tl{clip-path:polygon(14px 0%,100% 0%,100% 100%,0% 100%,0% 14px)}
-/* FUT card shape */
-.fut-shape{clip-path:polygon(13% 0%,87% 0%,100% 13%,100% 86%,70% 100%,30% 100%,0% 86%,0% 13%)}
-
-/* HUDPanel */
-.hud{background:var(--bgmid);border:1px solid var(--border);border-radius:12px;position:relative;overflow:hidden}
-.hud::before{content:'';position:absolute;top:0;left:0;right:0;height:40%;background:linear-gradient(to bottom,rgba(0,212,255,.07),transparent);pointer-events:none}
-.hud.coral::before{background:linear-gradient(to bottom,rgba(255,45,85,.07),transparent)}
-.hud.gold::before{background:linear-gradient(to bottom,rgba(255,215,0,.07),transparent)}
-.hud-border-cyan{border-color:rgba(0,212,255,.25)}
-.hud-border-coral{border-color:rgba(255,45,85,.25)}
-.hud-border-gold{border-color:rgba(255,215,0,.2)}
-
-/* section label */
-.sec-label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--sub);display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
-.sec-accent{display:inline-block;width:10px;height:14px;background:var(--cyan);clip-path:polygon(2px 0%,100% 0%,calc(100% - 2px) 100%,0% 100%);margin-right:6px}
-
-/* ── HOME SCREEN ── */
-.home-bg{background:linear-gradient(160deg,#0d1525 0%,var(--bg) 70%);padding:12px 18px 0;position:relative;overflow:hidden}
-.home-bg::before{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,.12) 0%,transparent 70%);pointer-events:none}
-.home-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
-.home-greet{font-size:.6rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}
-.home-name{font-family:'Russo One',sans-serif;font-size:1.6rem;color:#fff;line-height:1}
-.coins-badge{display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.6);padding:6px 10px;border:1px solid rgba(255,215,0,.35);font-family:'Russo One',sans-serif;font-size:.85rem;color:var(--gold);box-shadow:0 0 8px rgba(255,215,0,.15)}
-
-/* FUT CARD */
-.card-spotlight{display:flex;justify-content:center;padding:8px 0 14px;position:relative}
-.card-spotlight::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,.22) 0%,transparent 70%);filter:blur(20px);pointer-events:none}
-.fut-card{width:160px;aspect-ratio:.69;position:relative;cursor:pointer;transition:transform .3s var(--ease),box-shadow .3s}
-.fut-card:hover{transform:translateY(-5px) scale(1.03)}
-.fut-card-inner{width:100%;height:100%;clip-path:polygon(13% 0%,87% 0%,100% 13%,100% 86%,70% 100%,30% 100%,0% 86%,0% 13%);background:linear-gradient(145deg,#001828 0%,#002840 40%,#001020 100%);position:relative;overflow:hidden;display:flex;flex-direction:column}
-.fut-card-inner::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,255,.12) 0%,transparent 55%);pointer-events:none}
-.fut-card-inner::after{content:'';position:absolute;top:0;left:0;right:0;height:40%;background:linear-gradient(to bottom,rgba(255,255,255,.1),transparent);pointer-events:none}
-.card-border{position:absolute;inset:0;clip-path:polygon(13% 0%,87% 0%,100% 13%,100% 86%,70% 100%,30% 100%,0% 86%,0% 13%);border:2.5px solid rgba(0,212,255,.7);pointer-events:none;box-shadow:0 0 18px rgba(0,212,255,.3),inset 0 0 18px rgba(0,212,255,.06)}
-.card-top{display:flex;justify-content:space-between;padding:12px 10px 0;flex-shrink:0}
-.card-ovr{display:flex;flex-direction:column;align-items:flex-start}
-.card-ovr-num{font-family:'Russo One',sans-serif;font-size:2.2rem;color:#fff;line-height:1;text-shadow:0 0 10px rgba(255,255,255,.25)}
-.card-pos{font-family:'Russo One',sans-serif;font-size:.9rem;color:var(--cyan);line-height:1;padding-left:2px}
-.card-selfie{width:72px;height:90px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(0,212,255,.22) 0%,rgba(0,212,255,.05) 100%);position:relative}
-.card-selfie-letter{font-family:'Russo One',sans-serif;font-size:2.8rem;color:rgba(0,212,255,.5);text-shadow:0 0 14px rgba(0,212,255,.4)}
-.card-selfie-stripe{position:absolute;top:0;bottom:0;width:36px;background:rgba(0,212,255,.08);clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);transform:translateX(10px)}
-.card-name{font-family:'Russo One',sans-serif;font-size:.85rem;letter-spacing:.06em;color:#fff;text-align:center;padding:6px 8px 0;flex-shrink:0}
-.card-divider{width:36px;height:1px;background:rgba(0,212,255,.45);margin:4px auto;flex-shrink:0}
-.card-stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;padding:0 10px;flex-shrink:0}
-.card-stat-label{font-size:.48rem;font-weight:700;letter-spacing:.06em;color:rgba(255,255,255,.7);text-align:center}
-.card-stat-val{font-family:'Russo One',sans-serif;font-size:.85rem;color:#fff;text-align:center;line-height:1.2}
-.card-stat-val.hi{color:var(--gold)}
-.card-nation{display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 0 0;flex-shrink:0}
-.card-nation-flag{font-size:.9rem}
-.card-nation-sep{width:1px;height:11px;background:rgba(255,255,255,.22)}
-.card-nation-lv{font-family:'Russo One',sans-serif;font-size:.58rem;color:var(--cyan);letter-spacing:.06em}
-
-/* Coach panel */
-.coach-panel{margin:0 14px;padding:0}
-.coach-inner{display:flex;align-items:center;gap:12px;padding:13px 14px}
-.coach-icon-wrap{width:46px;height:46px;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.4);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;box-shadow:0 0 10px rgba(0,212,255,.15)}
-.coach-title{font-family:'Russo One',sans-serif;font-size:.8rem;letter-spacing:.12em;color:#fff;margin-bottom:3px}
-.coach-text{font-size:.62rem;color:var(--sub);line-height:1.5}
-.conn-pill{display:flex;align-items:center;gap:4px;background:rgba(0,0,0,.5);padding:4px 8px;border:1px solid rgba(57,255,20,.3);font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--lime);margin-left:auto;flex-shrink:0}
-.conn-dot{width:5px;height:5px;border-radius:50%;background:var(--lime);animation:pulseled 1.4s ease-in-out infinite alternate}
-@keyframes pulseled{from{opacity:1}to{opacity:.35}}
-
-/* XP strip */
-.xp-strip{margin:10px 14px 0;padding:13px 15px}
-.xp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.xp-lv{font-family:'Russo One',sans-serif;font-size:1.3rem;color:#fff}
-.xp-lv span{font-size:.58rem;font-weight:700;letter-spacing:.12em;color:var(--low);margin-right:4px}
-.xp-label{font-size:.58rem;font-weight:700;color:var(--low)}
-.xp-track{height:5px;background:rgba(0,0,0,.5);border-radius:3px;overflow:hidden}
-.xp-fill{height:100%;background:linear-gradient(90deg,var(--cyan),rgba(0,212,255,.6));border-radius:3px;width:42%;box-shadow:0 0 6px rgba(0,212,255,.5)}
-
-/* Quick actions */
-.quick-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:10px 14px 0}
-.qa-cell{background:var(--bgmid);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:14px 8px;cursor:pointer;transition:transform .18s var(--ease);position:relative;overflow:hidden}
-.qa-cell::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,0),rgba(0,0,0,0));transition:background .2s}
-.qa-cell:hover{transform:translateY(-2px)}
-.qa-cell:hover::after{background:linear-gradient(135deg,rgba(255,255,255,.04),transparent)}
-.qa-cell .qa-icon{font-size:1.3rem}
-.qa-cell .qa-label{font-size:.5rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff}
-
-/* ── GIOCA SCREEN ── */
-.screen-hdr{padding:10px 16px 6px;display:flex;justify-content:space-between;align-items:flex-end}
-.screen-title{font-family:'Russo One',sans-serif;font-size:1.5rem;color:#fff}
-.screen-sub{font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan)}
-
-.level-list{padding:0 14px;display:flex;flex-direction:column;gap:7px}
-.lv-row{background:var(--bgmid);border-radius:10px;padding:12px 12px;display:flex;align-items:center;gap:11px;cursor:pointer;position:relative;overflow:hidden;transition:transform .18s var(--ease)}
-.lv-row::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s}
-.lv-row:hover{transform:translateX(3px)}
-.lv-row:hover::before{opacity:1}
-.lv-row.cyan{border:1px solid rgba(0,212,255,.22)}
-.lv-row.cyan::before{background:linear-gradient(90deg,rgba(0,212,255,.05),transparent)}
-.lv-row.gold{border:1px solid rgba(255,215,0,.22)}
-.lv-row.gold::before{background:linear-gradient(90deg,rgba(255,215,0,.05),transparent)}
-.lv-row.coral{border:1px solid rgba(255,45,85,.22)}
-.lv-row.coral::before{background:linear-gradient(90deg,rgba(255,45,85,.05),transparent)}
-.lv-row.locked{border:1px solid rgba(255,255,255,.04);opacity:.45;cursor:default}
-.lv-row.locked:hover{transform:none}
-.lv-icon{width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
-.lv-icon.cyan{background:linear-gradient(135deg,rgba(0,212,255,.28),rgba(0,212,255,.07))}
-.lv-icon.gold{background:linear-gradient(135deg,rgba(255,215,0,.28),rgba(255,215,0,.07))}
-.lv-icon.coral{background:linear-gradient(135deg,rgba(255,45,85,.28),rgba(255,45,85,.07))}
-.lv-icon.locked{background:rgba(255,255,255,.04)}
-.lv-info{flex:1}
-.lv-name{font-family:'Russo One',sans-serif;font-size:.82rem}
-.lv-desc{font-size:.58rem;color:var(--sub);margin-top:1px}
-.lv-meta{display:flex;gap:7px;align-items:center;margin-top:4px}
-.stars{display:flex;gap:1px}
-.star{font-size:.5rem;color:var(--low)}
-.star.on{color:var(--gold)}
-.lv-dur{font-size:.52rem;color:var(--sub);font-weight:600}
-.lv-cones{font-size:.52rem;font-weight:600;color:var(--lime)}
-.lv-chevron{font-size:.75rem;color:var(--sub);flex-shrink:0}
-
-/* ── PROFILO SCREEN ── */
-.profilo-hdr{padding:12px 18px 0;display:flex;justify-content:space-between;align-items:flex-start}
-.profilo-left{}
-.profilo-title{font-family:'Russo One',sans-serif;font-size:2rem;color:#fff;line-height:1}
-.profilo-name{font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);margin-top:1px}
-.profilo-right{display:flex;align-items:center;gap:8px}
-.burger{width:38px;height:38px;background:rgba(255,255,255,.06);border:1px solid var(--stroke);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px;clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%)}
-.burger span{display:block;width:18px;height:2px;background:rgba(255,255,255,.8);clip-path:polygon(2px 0%,100% 0%,calc(100% - 2px) 100%,0% 100%)}
-.ovr-badge{width:62px;height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(0,212,255,.22),rgba(255,45,85,.18));border:1.5px solid rgba(0,212,255,.55);clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);box-shadow:0 0 12px rgba(0,212,255,.18)}
-.ovr-num{font-family:'Russo One',sans-serif;font-size:1.5rem;color:#fff;line-height:1}
-.ovr-label{font-size:.5rem;font-weight:700;letter-spacing:.1em;color:var(--sub)}
-
-.profilo-tabs{display:flex;border-bottom:1px solid var(--border);padding:10px 18px 0;background:rgba(0,0,0,.25)}
-.profilo-tab{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);padding:8px 0;margin-right:18px;cursor:pointer;position:relative;transition:color .2s;border:none;background:transparent;flex-shrink:0}
-.profilo-tab::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--cyan);opacity:0;transition:opacity .2s}
-.profilo-tab.active{color:#fff}
-.profilo-tab.active::after{opacity:1}
-
-/* Genitori dashboard */
-.genitori-hdr{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 0}
-.genitori-title-wrap{}
-.genitori-title{font-family:'Russo One',sans-serif;font-size:1.1rem;color:#fff}
-.genitori-sub{font-size:.58rem;font-weight:700;letter-spacing:.14em;color:var(--coral);margin-top:1px}
-.lock-btn{width:32px;height:32px;background:rgba(0,0,0,.5);border:1px solid var(--stroke);display:flex;align-items:center;justify-content:center;font-size:.85rem;clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%)}
-
-.progressi-panel{margin:10px 14px 0;padding:14px}
-.progressi-title{font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:10px}
-.stat-chips{display:grid;grid-template-columns:1fr 1fr 1fr 1fr}
-.stat-chip{text-align:center;padding:4px 0}
-.stat-chip .sv{font-family:'Russo One',sans-serif;font-size:1.2rem;color:#fff;display:block}
-.stat-chip .sk{font-size:.5rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:block;margin-top:1px}
-
-.sessioni-panel{margin:8px 14px 0}
-.sessioni-inner{padding:12px 14px}
-.sessioni-title{font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:10px}
-.sess-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
-.sess-row:last-child{border-bottom:none}
-.sess-left{}
-.sess-name{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff}
-.sess-date{font-size:.56rem;color:var(--sub);margin-top:1px}
-.sess-right{display:flex;align-items:baseline;gap:5px}
-.sess-score{font-family:'Russo One',sans-serif;font-size:1rem;color:var(--cyan)}
-.sess-rating{font-size:.52rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--low)}
-
-.assegna-panel{margin:8px 14px 0}
-.assegna-inner{padding:0}
-.assegna-hdr{display:flex;align-items:center;gap:7px;padding:12px 14px 10px;border-bottom:1px solid var(--border)}
-.assegna-hdr-icon{font-size:.85rem;color:var(--gold)}
-.assegna-hdr-label{font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold)}
-.assign-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer}
-.assign-row:last-child{border-bottom:none}
-.assign-check{width:18px;height:18px;border:1.5px solid var(--low);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0}
-.assign-check.on{border-color:var(--gold);background:rgba(255,215,0,.12);color:var(--gold)}
-.assign-name{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff}
-
-/* ── TRAINING SCREEN ── */
-.training-wrap{flex:1;display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% -10%,rgba(0,212,255,.09) 0%,transparent 60%)}
-.training-hdr{display:flex;justify-content:space-between;align-items:center;padding:8px 16px 10px}
-.training-name{font-family:'Russo One',sans-serif;font-size:.95rem;color:var(--cyan);letter-spacing:.08em}
-.training-close{width:30px;height:30px;background:rgba(255,255,255,.06);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.8rem;cursor:pointer;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%);color:var(--text);font-family:inherit}
-.timer-wrap{text-align:center;padding:6px 0 12px}
-.timer-val{font-family:'Russo One',sans-serif;font-size:3.8rem;color:#fff;line-height:1;letter-spacing:.02em}
-.timer-val span{color:var(--cyan)}
-.timer-lbl{font-size:.58rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--sub);margin-top:3px}
-.prog-wrap{height:4px;background:rgba(255,255,255,.07);margin:0 16px 14px;border-radius:2px;overflow:hidden}
-.prog-fill{height:100%;background:linear-gradient(90deg,var(--cyan),rgba(0,212,255,.6));width:45%;border-radius:2px;box-shadow:0 0 7px rgba(0,212,255,.6);transition:width .5s ease}
-
-.cones-row{display:flex;justify-content:center;gap:18px;margin-bottom:14px}
-.cone-item{display:flex;flex-direction:column;align-items:center;gap:5px}
-.cone-svg{position:relative;width:50px;height:50px;display:flex;align-items:center;justify-content:center}
-.cone-svg svg{position:absolute;inset:0}
-.cone-led{width:11px;height:11px;border-radius:50%;background:var(--low);z-index:1;transition:background .3s,box-shadow .3s}
-.cone-led.on-cyan{background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:coneflash .6s ease-in-out infinite alternate}
-.cone-led.on-lime{background:var(--lime);box-shadow:0 0 10px var(--lime)}
-.cone-led.on-coral{background:var(--coral);box-shadow:0 0 10px var(--coral);animation:coneflash .4s ease-in-out infinite alternate}
-@keyframes coneflash{from{opacity:1}to{opacity:.45}}
-.cone-lbl{font-size:.5rem;font-weight:700;letter-spacing:.1em;color:var(--sub);text-transform:uppercase}
-
-.live-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:0 14px 10px}
-.live-tile{background:var(--bgmid);border:1px solid var(--border);padding:9px;text-align:center;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)}
-.live-tile .lv{font-family:'Russo One',sans-serif;font-size:1.5rem;display:block}
-.live-tile .lk{font-size:.5rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);display:block;margin-top:1px}
-.live-tile.cyan .lv{color:var(--cyan);text-shadow:0 0 10px rgba(0,212,255,.5)}
-.live-tile.gold .lv{color:var(--gold)}
-.live-tile.lime .lv{color:var(--lime)}
-.live-tile.coral .lv{color:var(--coral)}
-
-.feed-box{background:var(--bgmid);border:1px solid var(--border);border-radius:9px;margin:0 14px;padding:9px 11px}
-.feed-label{font-size:.52rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--sub);margin-bottom:5px}
-.feed-row{display:flex;align-items:center;gap:7px;padding:3px 0;border-bottom:1px solid var(--border)}
-.feed-row:last-child{border-bottom:none}
-.feed-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.feed-dot.cyan{background:var(--cyan)}
-.feed-dot.lime{background:var(--lime)}
-.feed-dot.gold{background:var(--gold)}
-.feed-text{font-size:.58rem;color:var(--sub);flex:1}
-.feed-time{font-size:.52rem;color:var(--low)}
-
-.training-cta{padding:10px 14px;flex-shrink:0}
-.btn-primary{width:100%;padding:12px;background:var(--cyan);color:var(--void);font-family:'Russo One',sans-serif;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;border:none;cursor:pointer;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);transition:box-shadow .2s}
-.btn-primary:hover{box-shadow:0 0 22px rgba(0,212,255,.5)}
-.btn-ghost{width:100%;padding:11px;background:rgba(255,255,255,.05);color:var(--sub);font-family:'Russo One',sans-serif;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);cursor:pointer;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);transition:background .2s,color .2s;margin-top:7px}
-.btn-ghost:hover{background:rgba(255,255,255,.08);color:var(--text)}
-
-/* ── RESULT SCREEN ── */
-.result-wrap{flex:1;display:flex;flex-direction:column;align-items:center;padding:12px 16px}
-.result-badge{width:72px;height:72px;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,.2) 0%,rgba(0,212,255,.04) 70%);border:2px solid rgba(0,212,255,.35);display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:10px;box-shadow:0 0 28px rgba(0,212,255,.18)}
-.result-tag{font-size:.58rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);margin-bottom:3px}
-.result-score{font-family:'Russo One',sans-serif;font-size:3rem;color:#fff;line-height:1}
-.result-max{font-size:.68rem;color:var(--sub);margin-bottom:14px}
-.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%;margin-bottom:13px}
-.result-tile{background:var(--bgmid);border:1px solid var(--border);border-radius:9px;padding:9px;text-align:center;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)}
-.result-tile .rv{font-family:'Russo One',sans-serif;font-size:1.15rem;display:block}
-.result-tile .rk{font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);display:block;margin-top:1px}
-.result-tile.cyan .rv{color:var(--cyan)}
-.result-tile.gold .rv{color:var(--gold)}
-.result-tile.lime .rv{color:var(--lime)}
-.result-tile.coral .rv{color:var(--coral)}
-.xp-wrap{width:100%;margin-bottom:13px}
-.xp-labels{display:flex;justify-content:space-between;font-size:.58rem;color:var(--sub);margin-bottom:3px}
-.xp-track{height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
-.xp-bar{height:100%;background:linear-gradient(90deg,var(--gold),#FFA500);border-radius:3px;width:0%;transition:width 1.2s var(--ease);box-shadow:0 0 7px rgba(255,215,0,.5)}
-.result-actions{width:100%;display:flex;flex-direction:column;gap:7px}
-
-/* ── CONTROLS ── */
-.demo-controls{margin-top:1.8rem;display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center;padding:0 1rem}
-.ctrl-btn{padding:.55rem 1.2rem;font-family:'Chakra Petch',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--border);background:var(--bgmid);color:var(--sub);clip-path:polygon(7px 0%,100% 0%,calc(100% - 7px) 100%,0% 100%);cursor:pointer;transition:color .2s,border-color .2s,box-shadow .2s}
+/* CONTROLS */
+.demo-controls{margin-top:1.8rem;display:flex;gap:.7rem;flex-wrap:wrap;justify-content:center;padding:0 1rem;max-width:520px}
+.ctrl-btn{padding:.5rem 1rem;font-family:'Chakra Petch',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);background:var(--bgmid);color:var(--sub);clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);cursor:pointer;transition:color .2s,border-color .2s,box-shadow .2s}
 .ctrl-btn:hover,.ctrl-btn.active{color:var(--cyan);border-color:rgba(0,212,255,.4);box-shadow:0 0 14px rgba(0,212,255,.1)}
+
 .demo-hint{margin-top:.9rem;font-size:.7rem;color:var(--sub);text-align:center;display:flex;align-items:center;gap:.5rem;justify-content:center}
 .demo-hint::before,.demo-hint::after{content:'';display:block;width:18px;height:1px;background:var(--border)}
 
-/* ── FOOTER ── */
-.demo-footer{margin-top:3.5rem;border-top:1px solid var(--border);padding:1.8rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.9rem}
+/* ONBOARDING THUMBNAILS */
+.section-label{width:100%;max-width:600px;margin-top:2.5rem;margin-bottom:.8rem;padding:0 1rem;font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--sub);display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.onb-strip{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center;padding:0 1rem;max-width:600px}
+.onb-thumb{width:100px;cursor:pointer;transition:transform .2s var(--ease),box-shadow .2s}
+.onb-thumb:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,.6)}
+.onb-thumb img{width:100%;border-radius:14px;border:1.5px solid var(--border);display:block}
+.onb-thumb span{display:block;text-align:center;font-size:.52rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);margin-top:5px}
+
+/* FOOTER */
+.demo-footer{margin-top:3.5rem;border-top:1px solid var(--border);padding:1.8rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.9rem;width:100%}
 .demo-footer .logo{font-family:'Russo One',sans-serif;font-size:1.05rem;letter-spacing:.06em}
 .demo-footer .logo em{color:var(--cyan);font-style:normal}
-.demo-footer p{font-size:.72rem;color:var(--sub)}
+.demo-footer p{font-size:.72rem;color:var(--sub);max-width:380px}
 .demo-footer a{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);text-decoration:none;border-bottom:1px solid rgba(0,212,255,.3);transition:border-color .2s}
 .demo-footer a:hover{border-color:var(--cyan)}
 
-/* glow blobs */
-.blob{position:fixed;pointer-events:none;z-index:0;border-radius:50%;filter:blur(90px);opacity:.035}
+.blob{position:fixed;pointer-events:none;z-index:0;border-radius:50%;filter:blur(90px);opacity:.03}
 .blob1{width:600px;height:600px;background:var(--cyan);top:-200px;left:-200px}
 .blob2{width:400px;height:400px;background:var(--coral);bottom:-100px;right:-100px}
 </style>
@@ -358,7 +103,7 @@ body{background:var(--void);color:var(--text);font-family:'Chakra Petch',system-
   <div class="page-header">
     <div class="eyebrow">Demo interattiva</div>
     <h1>L'app <span>InSoccer</span></h1>
-    <p>Naviga tra le schermate esattamente come nell'app reale.</p>
+    <p>Screenshot reali dell'app. Naviga tra le schermate con i pulsanti o la tab bar.</p>
   </div>
 
   <div class="phone-scene">
@@ -366,571 +111,187 @@ body{background:var(--void);color:var(--text);font-family:'Chakra Petch',system-
       <div class="phone-notch"></div>
       <div class="phone-screen">
 
-        <!-- ═══════════════ HOME ═══════════════ -->
-        <div class="screen active" id="screen-home">
-          <div class="sb"><span class="sb-time">15:09</span><span class="sb-icons">●●● 5G 🔋</span></div>
-          <div class="sc">
-            <div class="home-bg">
-              <div class="home-top">
-                <div>
-                  <div class="home-greet">BENTORNATO</div>
-                  <div class="home-name">LEONE</div>
-                </div>
-                <div class="coins-badge skew">⭐ 850</div>
-              </div>
-              <div class="card-spotlight">
-                <div class="fut-card">
-                  <div class="fut-card-inner">
-                    <div class="card-top">
-                      <div class="card-ovr">
-                        <div class="card-ovr-num">55</div>
-                        <div class="card-pos">CF</div>
-                      </div>
-                      <div class="card-selfie">
-                        <div class="card-selfie-stripe"></div>
-                        <div class="card-selfie-letter">L</div>
-                      </div>
-                    </div>
-                    <div class="card-name">LEONE</div>
-                    <div class="card-divider"></div>
-                    <div class="card-stats-grid" style="margin-bottom:2px">
-                      <div class="card-stat-label">PAC</div><div class="card-stat-label">SHO</div><div class="card-stat-label">PAS</div>
-                      <div class="card-stat-val">58</div><div class="card-stat-val">54</div><div class="card-stat-val">56</div>
-                      <div class="card-stat-label" style="margin-top:3px">DRI</div><div class="card-stat-label" style="margin-top:3px">DEF</div><div class="card-stat-label" style="margin-top:3px">PHY</div>
-                      <div class="card-stat-val">60</div><div class="card-stat-val">40</div><div class="card-stat-val">52</div>
-                    </div>
-                    <div class="card-nation">
-                      <span class="card-nation-flag">🇮🇹</span>
-                      <div class="card-nation-sep"></div>
-                      <span class="card-nation-lv">LV 1</span>
-                    </div>
-                  </div>
-                  <div class="card-border"></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- coach -->
-            <div class="coach-panel" style="margin-top:10px">
-              <div class="hud hud-border-cyan">
-                <div class="coach-inner">
-                  <div class="coach-icon-wrap chamfer-tr">🧠</div>
-                  <div style="flex:1">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
-                      <div class="coach-title">COACH</div>
-                      <div class="conn-pill skew-sm"><div class="conn-dot"></div>3 CONI</div>
-                    </div>
-                    <div class="coach-text">Hai completato 3 sessioni questa settimana. Continua così — la costanza fa la differenza.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- XP -->
-            <div class="xp-strip hud hud-border-cyan chamfer-tl">
-              <div class="xp-top">
-                <div class="xp-lv"><span>LIV</span>1</div>
-                <div class="xp-label">0 / 500 XP</div>
-              </div>
-              <div class="xp-track"><div class="xp-fill" style="width:6%"></div></div>
-            </div>
-
-            <!-- quick actions -->
-            <div class="quick-actions">
-              <div class="qa-cell chamfer-tr" style="border:1px solid rgba(255,45,85,.3)" onclick="goScreen('gioca')">
-                <div class="qa-icon" style="color:var(--coral);text-shadow:0 0 8px var(--coral)">🎮</div>
-                <div class="qa-label">GIOCA</div>
-              </div>
-              <div class="qa-cell chamfer-tr" style="border:1px solid rgba(0,212,255,.3)">
-                <div class="qa-icon" style="color:var(--cyan);text-shadow:0 0 8px var(--cyan)">📊</div>
-                <div class="qa-label">STATS</div>
-              </div>
-              <div class="qa-cell chamfer-tr" style="border:1px solid rgba(255,215,0,.3)">
-                <div class="qa-icon" style="color:var(--gold);text-shadow:0 0 8px var(--gold)">🛍</div>
-                <div class="qa-label">SHOP</div>
-              </div>
-            </div>
-            <div style="height:14px"></div>
-          </div>
-          <div class="tabbar">
-            <button class="tab-item active" onclick="goScreen('home')"><div class="tab-bg"></div><span class="tab-icon">🏠</span><span class="tab-label">HOME</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('gioca')"><div class="tab-bg"></div><span class="tab-icon">🎮</span><span class="tab-label">GIOCA</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('amici')"><div class="tab-bg"></div><span class="tab-icon">👥</span><span class="tab-label">AMICI</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('profilo')"><div class="tab-bg"></div><span class="tab-icon">👤</span><span class="tab-label">PROFILO</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('shop')"><div class="tab-bg"></div><span class="tab-icon">🛍</span><span class="tab-label">SHOP</span></button>
+        <!-- HOME -->
+        <div class="screen active" id="s-home">
+          <img src="screens/home.png" alt="Home">
+          <div class="tab-overlay">
+            <div class="tab-tap" onclick="goScreen('home')"></div>
+            <div class="tab-tap" onclick="goScreen('gioca')"></div>
+            <div class="tab-tap" onclick="goScreen('amici')"></div>
+            <div class="tab-tap" onclick="goScreen('profilo')"></div>
+            <div class="tab-tap" onclick="goScreen('shop')"></div>
           </div>
         </div>
 
-        <!-- ═══════════════ GIOCA ═══════════════ -->
-        <div class="screen" id="screen-gioca">
-          <div class="sb"><span class="sb-time">15:09</span><span class="sb-icons">●●● 5G 🔋</span></div>
-          <div class="sc">
-            <div class="screen-hdr" style="flex-direction:column;align-items:flex-start;gap:1px">
-              <div class="screen-title">ALLENATI</div>
-              <div class="screen-sub">SCEGLI UN LIVELLO</div>
-            </div>
-            <div style="height:8px"></div>
-            <div class="level-list">
-              <div class="lv-row cyan" onclick="goScreen('training')">
-                <div class="lv-icon cyan">⚡</div>
-                <div class="lv-info">
-                  <div class="lv-name" style="color:var(--cyan)">Primi Tocchi</div>
-                  <div class="lv-desc">Tocchi veloci attorno al conetto</div>
-                  <div class="lv-meta">
-                    <div class="stars"><span class="star on">★</span><span class="star">★</span><span class="star">★</span></div>
-                    <span class="lv-dur">120s</span><span class="lv-cones">🔵 ×1</span>
-                  </div>
-                </div>
-                <span class="lv-chevron">›</span>
-              </div>
-              <div class="lv-row cyan" onclick="goScreen('training')">
-                <div class="lv-icon cyan">🎯</div>
-                <div class="lv-info">
-                  <div class="lv-name" style="color:var(--cyan)">Slalom Neon</div>
-                  <div class="lv-desc">Slalom tra i conetti con precisione</div>
-                  <div class="lv-meta">
-                    <div class="stars"><span class="star on">★</span><span class="star">★</span><span class="star">★</span></div>
-                    <span class="lv-dur">180s</span><span class="lv-cones">🔵 ×1</span>
-                  </div>
-                </div>
-                <span class="lv-chevron">›</span>
-              </div>
-              <div class="lv-row gold" onclick="goScreen('training')">
-                <div class="lv-icon gold">⚔️</div>
-                <div class="lv-info">
-                  <div class="lv-name" style="color:var(--gold)">Riflessi Lampo</div>
-                  <div class="lv-desc">Reagisci ai LED, doppio conetto</div>
-                  <div class="lv-meta">
-                    <div class="stars"><span class="star on">★</span><span class="star on">★</span><span class="star">★</span></div>
-                    <span class="lv-dur">150s</span><span class="lv-cones" style="color:var(--gold)">🟡 ×2</span>
-                  </div>
-                </div>
-                <span class="lv-chevron" style="color:var(--gold)">›</span>
-              </div>
-              <div class="lv-row locked">
-                <div class="lv-icon locked">🔒</div>
-                <div class="lv-info">
-                  <div class="lv-name" style="color:var(--low)">Combo Master</div>
-                  <div class="lv-desc">Completa Riflessi Lampo (score ≥ 75)</div>
-                  <div class="lv-meta">
-                    <div class="stars"><span class="star on">★</span><span class="star on">★</span><span class="star on">★</span></div>
-                    <span class="lv-dur">200s</span><span class="lv-cones" style="color:var(--low)">×3</span>
-                  </div>
-                </div>
-                <span style="font-size:.8rem;color:var(--low)">🔒</span>
-              </div>
-            </div>
-            <div style="height:14px"></div>
-          </div>
-          <div class="tabbar">
-            <button class="tab-item" onclick="goScreen('home')"><div class="tab-bg"></div><span class="tab-icon">🏠</span><span class="tab-label">HOME</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item active" onclick="goScreen('gioca')"><div class="tab-bg"></div><span class="tab-icon">🎮</span><span class="tab-label">GIOCA</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('amici')"><div class="tab-bg"></div><span class="tab-icon">👥</span><span class="tab-label">AMICI</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('profilo')"><div class="tab-bg"></div><span class="tab-icon">👤</span><span class="tab-label">PROFILO</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('shop')"><div class="tab-bg"></div><span class="tab-icon">🛍</span><span class="tab-label">SHOP</span></button>
+        <!-- GIOCA -->
+        <div class="screen" id="s-gioca">
+          <img src="screens/gioca.png" alt="Gioca">
+          <div class="tab-overlay">
+            <div class="tab-tap" onclick="goScreen('home')"></div>
+            <div class="tab-tap" onclick="goScreen('gioca')"></div>
+            <div class="tab-tap" onclick="goScreen('amici')"></div>
+            <div class="tab-tap" onclick="goScreen('profilo')"></div>
+            <div class="tab-tap" onclick="goScreen('shop')"></div>
           </div>
         </div>
 
-        <!-- ═══════════════ AMICI ═══════════════ -->
-        <div class="screen" id="screen-amici">
-          <div class="sb"><span class="sb-time">15:09</span><span class="sb-icons">●●● 5G 🔋</span></div>
-          <div class="sc">
-            <div class="screen-hdr" style="flex-direction:column;align-items:flex-start;gap:1px">
-              <div class="screen-title">GLOBALE</div>
-              <div class="screen-sub">CLASSIFICA SETTIMANALE</div>
-            </div>
-            <div style="margin:6px 14px 10px;background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.2);border-radius:8px;padding:8px 12px;font-size:.58rem;color:var(--gold);font-weight:600">🏅 Settimana 26 · Termina tra 3 giorni</div>
-            <div style="padding:0 14px;display:flex;flex-direction:column;gap:6px">
-              <div style="background:var(--bgmid);border:1px solid var(--border);border-radius:9px;padding:9px 12px;display:flex;align-items:center;gap:9px"><span style="font-family:'Russo One',sans-serif;font-size:.88rem;color:var(--gold);width:22px;text-align:center">1</span><span style="font-size:1rem">⚽</span><div style="flex:1"><div style="font-size:.7rem;font-weight:600">Luca T.</div><div style="font-size:.54rem;color:var(--sub)">🇮🇹 Italia</div></div><div style="font-family:'Russo One',sans-serif;font-size:.88rem;color:var(--cyan)">4.210</div></div>
-              <div style="background:var(--bgmid);border:1px solid var(--border);border-radius:9px;padding:9px 12px;display:flex;align-items:center;gap:9px"><span style="font-family:'Russo One',sans-serif;font-size:.88rem;color:#C0C0C0;width:22px;text-align:center">2</span><span style="font-size:1rem">🦁</span><div style="flex:1"><div style="font-size:.7rem;font-weight:600">Ahmed K.</div><div style="font-size:.54rem;color:var(--sub)">🇩🇪 Germania</div></div><div style="font-family:'Russo One',sans-serif;font-size:.88rem;color:var(--sub)">3.890</div></div>
-              <div style="background:var(--bgmid);border:1px solid var(--border);border-radius:9px;padding:9px 12px;display:flex;align-items:center;gap:9px"><span style="font-family:'Russo One',sans-serif;font-size:.88rem;color:#CD7F32;width:22px;text-align:center">3</span><span style="font-size:1rem">🐆</span><div style="flex:1"><div style="font-size:.7rem;font-weight:600">Carlos M.</div><div style="font-size:.54rem;color:var(--sub)">🇪🇸 Spagna</div></div><div style="font-family:'Russo One',sans-serif;font-size:.88rem;color:var(--sub)">3.540</div></div>
-              <div style="height:1px;background:var(--border);margin:2px 0"></div>
-              <div style="background:var(--bgmid);border:1px solid rgba(0,212,255,.35);background:rgba(0,212,255,.04);border-radius:9px;padding:9px 12px;display:flex;align-items:center;gap:9px"><span style="font-family:'Russo One',sans-serif;font-size:.88rem;color:var(--cyan);width:22px;text-align:center">12</span><span style="font-size:1rem">⭐</span><div style="flex:1"><div style="font-size:.7rem;font-weight:600">Leone O.</div><div style="font-size:.54rem;color:var(--sub)">🇮🇹 Italia</div></div><div style="font-family:'Russo One',sans-serif;font-size:.88rem;color:var(--cyan)">640</div><div style="font-size:.48rem;font-weight:700;color:var(--cyan);background:rgba(0,212,255,.12);padding:2px 5px;border-radius:3px;margin-left:4px">TU</div></div>
-            </div>
-          </div>
-          <div class="tabbar">
-            <button class="tab-item" onclick="goScreen('home')"><div class="tab-bg"></div><span class="tab-icon">🏠</span><span class="tab-label">HOME</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('gioca')"><div class="tab-bg"></div><span class="tab-icon">🎮</span><span class="tab-label">GIOCA</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item active" onclick="goScreen('amici')"><div class="tab-bg"></div><span class="tab-icon">👥</span><span class="tab-label">AMICI</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('profilo')"><div class="tab-bg"></div><span class="tab-icon">👤</span><span class="tab-label">PROFILO</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('shop')"><div class="tab-bg"></div><span class="tab-icon">🛍</span><span class="tab-label">SHOP</span></button>
+        <!-- AMICI -->
+        <div class="screen" id="s-amici">
+          <img src="screens/amici.png" alt="Amici">
+          <div class="tab-overlay">
+            <div class="tab-tap" onclick="goScreen('home')"></div>
+            <div class="tab-tap" onclick="goScreen('gioca')"></div>
+            <div class="tab-tap" onclick="goScreen('amici')"></div>
+            <div class="tab-tap" onclick="goScreen('profilo')"></div>
+            <div class="tab-tap" onclick="goScreen('shop')"></div>
           </div>
         </div>
 
-        <!-- ═══════════════ PROFILO ═══════════════ -->
-        <div class="screen" id="screen-profilo">
-          <div class="sb"><span class="sb-time">15:09</span><span class="sb-icons">🔔 ↑ ●●● 5G 🔋</span></div>
-          <div class="profilo-hdr">
-            <div class="profilo-left">
-              <div class="profilo-title">PROFILO</div>
-              <div class="profilo-name">LEONE</div>
-            </div>
-            <div class="profilo-right">
-              <div class="burger"><span></span><span></span><span></span></div>
-              <div class="ovr-badge"><div class="ovr-num">55</div><div class="ovr-label">OVR</div></div>
-            </div>
-          </div>
-          <div class="profilo-tabs">
-            <button class="profilo-tab" onclick="switchTab('personalizza')">PERSONALIZZA</button>
-            <button class="profilo-tab" onclick="switchTab('export')">EXPORT CARD</button>
-            <button class="profilo-tab active" onclick="switchTab('genitori')">GENITORI</button>
-          </div>
-          <div class="sc" id="profilo-content">
-            <!-- Genitori section (default) -->
-            <div id="tab-genitori">
-              <div class="genitori-hdr">
-                <div class="genitori-title-wrap">
-                  <div class="genitori-title">AREA GENITORI</div>
-                  <div class="genitori-sub">LEONE</div>
-                </div>
-                <div class="lock-btn">🔒</div>
-              </div>
-
-              <div class="progressi-panel hud hud-border-cyan chamfer-tl">
-                <div class="progressi-title">PROGRESSI</div>
-                <div class="stat-chips">
-                  <div class="stat-chip"><span class="sv">1</span><span class="sk" style="color:var(--cyan)">LIV</span></div>
-                  <div class="stat-chip"><span class="sv">0</span><span class="sk" style="color:var(--gold)">XP</span></div>
-                  <div class="stat-chip"><span class="sv">3</span><span class="sk" style="color:var(--coral)">SESSIONI</span></div>
-                  <div class="stat-chip"><span class="sv">7</span><span class="sk" style="color:var(--teal)">MEDIA</span></div>
-                </div>
-              </div>
-
-              <div class="sessioni-panel">
-                <div class="hud hud-border-cyan">
-                  <div class="sessioni-inner">
-                    <div class="sessioni-title">ULTIME SESSIONI</div>
-                    <div class="sess-row">
-                      <div class="sess-left"><div class="sess-name">RIFLESSI LAMPO</div><div class="sess-date">27 June 2026</div></div>
-                      <div class="sess-right"><span class="sess-score">16</span><span class="sess-rating">CONTINUA COSÌ</span></div>
-                    </div>
-                    <div class="sess-row">
-                      <div class="sess-left"><div class="sess-name">PRIMI TOCCHI</div><div class="sess-date">27 June 2026</div></div>
-                      <div class="sess-right"><span class="sess-score">4</span><span class="sess-rating">CONTINUA COSÌ</span></div>
-                    </div>
-                    <div class="sess-row">
-                      <div class="sess-left"><div class="sess-name">SLALOM NEON</div><div class="sess-date">27 June 2026</div></div>
-                      <div class="sess-right"><span class="sess-score">1</span><span class="sess-rating">CONTINUA COSÌ</span></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="assegna-panel">
-                <div class="hud hud-border-gold">
-                  <div class="assegna-inner">
-                    <div class="assegna-hdr">
-                      <span class="assegna-hdr-icon">✅</span>
-                      <span class="assegna-hdr-label">ASSEGNA ESERCIZI</span>
-                    </div>
-                    <div class="assign-row" onclick="toggleAssign(this)">
-                      <div class="assign-check">□</div>
-                      <div class="assign-name">PRIMI TOCCHI</div>
-                    </div>
-                    <div class="assign-row" onclick="toggleAssign(this)">
-                      <div class="assign-check">□</div>
-                      <div class="assign-name">SLALOM NEON</div>
-                    </div>
-                    <div class="assign-row" onclick="toggleAssign(this)">
-                      <div class="assign-check">□</div>
-                      <div class="assign-name">RIFLESSI LAMPO</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div style="height:14px"></div>
-            </div>
-
-            <div id="tab-personalizza" style="display:none;padding:14px 16px">
-              <div style="text-align:center;padding:20px 0">
-                <div style="width:120px;height:120px;border-radius:50%;border:2px dashed rgba(0,212,255,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:3rem">👤</div>
-                <div style="font-size:.6rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--low)">AGGIUNGI FOTO</div>
-              </div>
-              <div style="display:flex;gap:8px;margin-bottom:14px">
-                <div style="flex:1;height:44px;background:rgba(255,45,85,.12);border:1px solid rgba(255,45,85,.4);clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);display:flex;align-items:center;justify-content:center;gap:6px;font-size:.7rem;font-weight:700;letter-spacing:.08em;cursor:pointer">📷 FOTOCAMERA</div>
-                <div style="flex:1;height:44px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.3);clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);display:flex;align-items:center;justify-content:center;gap:6px;font-size:.7rem;font-weight:700;letter-spacing:.08em;cursor:pointer">🖼 GALLERIA</div>
-              </div>
-              <div class="hud hud-border-cyan" style="padding:12px;margin-bottom:10px">
-                <div style="font-size:.55rem;font-weight:700;letter-spacing:.15em;color:var(--cyan);margin-bottom:6px">NOME GIOCATORE</div>
-                <div style="font-family:'Russo One',sans-serif;font-size:1.1rem;color:#fff;border-bottom:2px solid var(--cyan);padding-bottom:6px">LEONE</div>
-              </div>
-            </div>
-
-            <div id="tab-export" style="display:none;padding:14px 16px">
-              <div class="hud hud-border-coral" style="margin-bottom:14px">
-                <div style="display:flex;gap:12px;padding:13px;align-items:center">
-                  <div style="font-size:2rem;color:var(--coral)">📷</div>
-                  <div>
-                    <div style="font-family:'Russo One',sans-serif;font-size:.9rem;margin-bottom:2px">EXPORT CARD</div>
-                    <div style="font-size:.6rem;color:var(--sub);line-height:1.4">Scatta un selfie → la tua faccia appare nella card FUT → salva nelle Foto</div>
-                  </div>
-                </div>
-              </div>
-              <div style="display:flex;justify-content:center;margin-bottom:14px">
-                <div class="fut-card" style="width:140px">
-                  <div class="fut-card-inner">
-                    <div class="card-top"><div class="card-ovr"><div class="card-ovr-num">55</div><div class="card-pos">CF</div></div><div class="card-selfie"><div class="card-selfie-stripe"></div><div class="card-selfie-letter">L</div></div></div>
-                    <div class="card-name">LEONE</div>
-                    <div class="card-divider"></div>
-                    <div class="card-stats-grid"><div class="card-stat-label">PAC</div><div class="card-stat-label">SHO</div><div class="card-stat-label">PAS</div><div class="card-stat-val">58</div><div class="card-stat-val">54</div><div class="card-stat-val">56</div><div class="card-stat-label" style="margin-top:3px">DRI</div><div class="card-stat-label" style="margin-top:3px">DEF</div><div class="card-stat-label" style="margin-top:3px">PHY</div><div class="card-stat-val">60</div><div class="card-stat-val">40</div><div class="card-stat-val">52</div></div>
-                    <div class="card-nation"><span class="card-nation-flag">🇮🇹</span><div class="card-nation-sep"></div><span class="card-nation-lv">LV 1</span></div>
-                  </div>
-                  <div class="card-border"></div>
-                </div>
-              </div>
-              <button class="btn-primary">GENERA CARD</button>
-            </div>
-          </div>
-          <div class="tabbar">
-            <button class="tab-item" onclick="goScreen('home')"><div class="tab-bg"></div><span class="tab-icon">🏠</span><span class="tab-label">HOME</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('gioca')"><div class="tab-bg"></div><span class="tab-icon">🎮</span><span class="tab-label">GIOCA</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('amici')"><div class="tab-bg"></div><span class="tab-icon">👥</span><span class="tab-label">AMICI</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item active" onclick="goScreen('profilo')"><div class="tab-bg"></div><span class="tab-icon">👤</span><span class="tab-label">PROFILO</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('shop')"><div class="tab-bg"></div><span class="tab-icon">🛍</span><span class="tab-label">SHOP</span></button>
+        <!-- PROFILO -->
+        <div class="screen" id="s-profilo">
+          <img src="screens/profilo.png" alt="Profilo">
+          <div class="tab-overlay">
+            <div class="tab-tap" onclick="goScreen('home')"></div>
+            <div class="tab-tap" onclick="goScreen('gioca')"></div>
+            <div class="tab-tap" onclick="goScreen('amici')"></div>
+            <div class="tab-tap" onclick="goScreen('profilo')"></div>
+            <div class="tab-tap" onclick="goScreen('shop')"></div>
           </div>
         </div>
 
-        <!-- ═══════════════ SHOP ═══════════════ -->
-        <div class="screen" id="screen-shop">
-          <div class="sb"><span class="sb-time">15:09</span><span class="sb-icons">●●● 5G 🔋</span></div>
-          <div class="sc">
-            <div class="screen-hdr" style="flex-direction:column;align-items:flex-start;gap:1px">
-              <div class="screen-title">SHOP</div>
-              <div class="screen-sub">PERSONALIZZA IL TUO PROFILO</div>
-            </div>
-            <div style="padding:0 14px;display:flex;flex-direction:column;gap:8px">
-              <div style="font-size:.58rem;font-weight:700;letter-spacing:.15em;color:var(--sub);display:flex;align-items:center;gap:8px;margin-bottom:2px">TEMI CARD <span style="flex:1;height:1px;background:var(--border);display:block"></span></div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-                <div style="background:var(--bgmid);border:1px solid rgba(0,212,255,.3);border-radius:9px;padding:12px;text-align:center;cursor:pointer">
-                  <div style="font-size:1.5rem;margin-bottom:5px">🌊</div>
-                  <div style="font-family:'Russo One',sans-serif;font-size:.72rem;color:var(--cyan)">NEON</div>
-                  <div style="font-size:.55rem;color:var(--sub);margin-top:2px">EQUIPAGGIATO</div>
-                </div>
-                <div style="background:var(--bgmid);border:1px solid rgba(255,215,0,.25);border-radius:9px;padding:12px;text-align:center;cursor:pointer">
-                  <div style="font-size:1.5rem;margin-bottom:5px">🔥</div>
-                  <div style="font-family:'Russo One',sans-serif;font-size:.72rem;color:var(--gold)">FIRE</div>
-                  <div style="font-size:.55rem;color:var(--low);margin-top:2px">150 ⭐</div>
-                </div>
-                <div style="background:var(--bgmid);border:1px solid rgba(255,45,85,.25);border-radius:9px;padding:12px;text-align:center;cursor:pointer">
-                  <div style="font-size:1.5rem;margin-bottom:5px">🌌</div>
-                  <div style="font-family:'Russo One',sans-serif;font-size:.72rem;color:var(--coral)">GALAXY</div>
-                  <div style="font-size:.55rem;color:var(--low);margin-top:2px">200 ⭐</div>
-                </div>
-                <div style="background:var(--bgmid);border:1px solid var(--border);border-radius:9px;padding:12px;text-align:center;cursor:pointer">
-                  <div style="font-size:1.5rem;margin-bottom:5px">👑</div>
-                  <div style="font-family:'Russo One',sans-serif;font-size:.72rem;color:var(--gold)">ICON</div>
-                  <div style="font-size:.55rem;color:var(--low);margin-top:2px">500 ⭐</div>
-                </div>
-              </div>
-            </div>
-            <div style="height:14px"></div>
-          </div>
-          <div class="tabbar">
-            <button class="tab-item" onclick="goScreen('home')"><div class="tab-bg"></div><span class="tab-icon">🏠</span><span class="tab-label">HOME</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('gioca')"><div class="tab-bg"></div><span class="tab-icon">🎮</span><span class="tab-label">GIOCA</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('amici')"><div class="tab-bg"></div><span class="tab-icon">👥</span><span class="tab-label">AMICI</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item" onclick="goScreen('profilo')"><div class="tab-bg"></div><span class="tab-icon">👤</span><span class="tab-label">PROFILO</span></button>
-            <div class="tab-divider"></div>
-            <button class="tab-item active" onclick="goScreen('shop')"><div class="tab-bg"></div><span class="tab-icon">🛍</span><span class="tab-label">SHOP</span></button>
+        <!-- GENITORI -->
+        <div class="screen" id="s-genitori">
+          <img src="screens/genitori.png" alt="Genitori">
+          <div class="tab-overlay">
+            <div class="tab-tap" onclick="goScreen('home')"></div>
+            <div class="tab-tap" onclick="goScreen('gioca')"></div>
+            <div class="tab-tap" onclick="goScreen('amici')"></div>
+            <div class="tab-tap" onclick="goScreen('profilo')"></div>
+            <div class="tab-tap" onclick="goScreen('shop')"></div>
           </div>
         </div>
 
-        <!-- ═══════════════ TRAINING ═══════════════ -->
-        <div class="screen" id="screen-training">
-          <div class="sb"><span class="sb-time">15:09</span><span class="sb-icons">●●● 5G 🔋</span></div>
-          <div class="training-wrap">
-            <div class="training-hdr">
-              <div class="training-name">RIFLESSI LAMPO</div>
-              <button class="training-close" onclick="goScreen('gioca')">✕</button>
-            </div>
-            <div class="timer-wrap">
-              <div class="timer-val"><span id="timer-val">1:22</span></div>
-              <div class="timer-lbl">TEMPO RIMASTO</div>
-            </div>
-            <div class="prog-wrap"><div class="prog-fill" id="prog-fill"></div></div>
-            <div class="cones-row">
-              <div class="cone-item">
-                <div class="cone-svg">
-                  <svg viewBox="0 0 50 50" fill="none"><polygon points="25,3 47,43 3,43" fill="rgba(0,212,255,.1)" stroke="rgba(0,212,255,.4)" stroke-width="1.5"/></svg>
-                  <div class="cone-led on-cyan" id="cone1"></div>
-                </div>
-                <div class="cone-lbl">CONO 1</div>
-              </div>
-              <div class="cone-item">
-                <div class="cone-svg">
-                  <svg viewBox="0 0 50 50" fill="none"><polygon points="25,3 47,43 3,43" fill="rgba(57,255,20,.1)" stroke="rgba(57,255,20,.4)" stroke-width="1.5"/></svg>
-                  <div class="cone-led on-lime" id="cone2"></div>
-                </div>
-                <div class="cone-lbl">CONO 2</div>
-              </div>
-              <div class="cone-item">
-                <div class="cone-svg">
-                  <svg viewBox="0 0 50 50" fill="none"><polygon points="25,3 47,43 3,43" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.15)" stroke-width="1.5"/></svg>
-                  <div class="cone-led" id="cone3"></div>
-                </div>
-                <div class="cone-lbl">CONO 3</div>
-              </div>
-            </div>
-            <div class="live-grid">
-              <div class="live-tile cyan"><span class="lv" id="lt">23</span><span class="lk">TOCCHI</span></div>
-              <div class="live-tile gold"><span class="lv" id="ls">680</span><span class="lk">SCORE</span></div>
-              <div class="live-tile lime"><span class="lv" id="lstr">5🔥</span><span class="lk">STREAK</span></div>
-              <div class="live-tile coral"><span class="lv" id="lms">210ms</span><span class="lk">REAZIONE</span></div>
-            </div>
-            <div class="feed-box">
-              <div class="feed-label">LIVE FEED</div>
-              <div class="feed-row"><div class="feed-dot cyan"></div><div class="feed-text">Tocco cono 1 — rilevato</div><div class="feed-time">15:08</div></div>
-              <div class="feed-row"><div class="feed-dot lime"></div><div class="feed-text">Tocco cono 2 — +15 XP</div><div class="feed-time">15:07</div></div>
-              <div class="feed-row"><div class="feed-dot gold"></div><div class="feed-text">Streak ×5 — bonus attivato</div><div class="feed-time">15:06</div></div>
-            </div>
-          </div>
-          <div class="training-cta">
-            <button class="btn-primary" onclick="goScreen('result')">TERMINA SESSIONE</button>
+        <!-- SHOP -->
+        <div class="screen" id="s-shop">
+          <img src="screens/shop.png" alt="Shop">
+          <div class="tab-overlay">
+            <div class="tab-tap" onclick="goScreen('home')"></div>
+            <div class="tab-tap" onclick="goScreen('gioca')"></div>
+            <div class="tab-tap" onclick="goScreen('amici')"></div>
+            <div class="tab-tap" onclick="goScreen('profilo')"></div>
+            <div class="tab-tap" onclick="goScreen('shop')"></div>
           </div>
         </div>
 
-        <!-- ═══════════════ RESULT ═══════════════ -->
-        <div class="screen" id="screen-result">
-          <div class="sb"><span class="sb-time">15:12</span><span class="sb-icons">●●● 5G 🔋</span></div>
-          <div class="sc">
-            <div class="result-wrap">
-              <div class="result-badge">🏆</div>
-              <div class="result-tag">SESSIONE COMPLETATA</div>
-              <div class="result-score">847</div>
-              <div class="result-max">/ 1000 punti · Personal best 🎉</div>
-              <div class="result-grid">
-                <div class="result-tile cyan"><span class="rv">31</span><span class="rk">TOCCHI</span></div>
-                <div class="result-tile coral"><span class="rv">198ms</span><span class="rk">REAZIONE AVG</span></div>
-                <div class="result-tile gold"><span class="rv">×7</span><span class="rk">MAX STREAK</span></div>
-                <div class="result-tile lime"><span class="rv">3:18</span><span class="rk">DURATA</span></div>
-              </div>
-              <div class="xp-wrap">
-                <div class="xp-labels"><span>XP guadagnato: +320</span><span>Lv 1 → 2</span></div>
-                <div class="xp-track"><div class="xp-bar" id="xp-bar"></div></div>
-              </div>
-              <div class="result-actions">
-                <button class="btn-primary" onclick="goScreen('gioca')">RIVAI</button>
-                <button class="btn-ghost" onclick="goScreen('home')">Torna alla home</button>
-              </div>
-            </div>
+        <!-- ONBOARDING -->
+        <div class="screen" id="s-onboarding">
+          <img id="onb-img" src="screens/s1_launch.png" alt="Onboarding">
+          <div class="onb-dots">
+            <div class="onb-dot active" id="dot-0"></div>
+            <div class="onb-dot" id="dot-1"></div>
+            <div class="onb-dot" id="dot-2"></div>
+            <div class="onb-dot" id="dot-3"></div>
+            <div class="onb-dot" id="dot-4"></div>
+            <div class="onb-dot" id="dot-5"></div>
+          </div>
+          <div class="onb-nav">
+            <button class="onb-btn hidden" id="onb-prev" onclick="onbNav(-1)">← Indietro</button>
+            <button class="onb-btn" id="onb-next" onclick="onbNav(1)">Avanti →</button>
           </div>
         </div>
 
-      </div><!-- phone-screen -->
-    </div><!-- phone-frame -->
-  </div><!-- phone-scene -->
-
-  <div class="demo-hint">Naviga con la tab bar in basso nel telefono</div>
+      </div>
+    </div>
+  </div>
 
   <div class="demo-controls">
-    <button class="ctrl-btn active" id="ctrl-home" onclick="goScreen('home')">🏠 Home</button>
-    <button class="ctrl-btn" id="ctrl-gioca" onclick="goScreen('gioca')">🎮 Gioca</button>
-    <button class="ctrl-btn" id="ctrl-training" onclick="goScreen('training')">▶ Sessione</button>
-    <button class="ctrl-btn" id="ctrl-result" onclick="goScreen('result')">🏆 Risultato</button>
-    <button class="ctrl-btn" id="ctrl-profilo" onclick="goScreen('profilo')">👤 Profilo</button>
-    <button class="ctrl-btn" id="ctrl-amici" onclick="goScreen('amici')">📊 Globale</button>
+    <button class="ctrl-btn active" id="ctrl-home"      onclick="goScreen('home')">🏠 Home</button>
+    <button class="ctrl-btn"        id="ctrl-gioca"     onclick="goScreen('gioca')">🎮 Gioca</button>
+    <button class="ctrl-btn"        id="ctrl-amici"     onclick="goScreen('amici')">👥 Amici</button>
+    <button class="ctrl-btn"        id="ctrl-profilo"   onclick="goScreen('profilo')">👤 Profilo</button>
+    <button class="ctrl-btn"        id="ctrl-genitori"  onclick="goScreen('genitori')">👨‍👦 Genitori</button>
+    <button class="ctrl-btn"        id="ctrl-shop"      onclick="goScreen('shop')">🛍 Shop</button>
+    <button class="ctrl-btn"        id="ctrl-onboarding" onclick="goScreen('onboarding')">▶ Onboarding</button>
+  </div>
+
+  <div class="demo-hint">Tocca la tab bar nel telefono per navigare</div>
+
+  <div class="section-label">Onboarding</div>
+  <div class="onb-strip">
+    <div class="onb-thumb" onclick="goOnb(0)">
+      <img src="screens/s1_launch.png" alt="Login"><span>Login</span>
+    </div>
+    <div class="onb-thumb" onclick="goOnb(1)">
+      <img src="screens/onboarding_avatar.png" alt="Avatar"><span>Avatar</span>
+    </div>
+    <div class="onb-thumb" onclick="goOnb(2)">
+      <img src="screens/onboarding_cono.png" alt="Cono"><span>Setup</span>
+    </div>
+    <div class="onb-thumb" onclick="goOnb(3)">
+      <img src="screens/onboarding_connetti.png" alt="Connetti"><span>Connetti</span>
+    </div>
+    <div class="onb-thumb" onclick="goOnb(4)">
+      <img src="screens/onboarding_ricerca.png" alt="Ricerca"><span>Ricerca</span>
+    </div>
+    <div class="onb-thumb" onclick="goOnb(5)">
+      <img src="screens/onboarding_evolvi.png" alt="Evolvi"><span>Evolvi</span>
+    </div>
   </div>
 
   <div class="demo-footer">
     <div class="logo"><em>IN</em>SOCCER</div>
-    <p>Demo visiva — l'app reale si connette ai conetti via Bluetooth e registra ogni sessione su Firebase.</p>
+    <p>L'app si connette ai conetti via Bluetooth e registra ogni sessione in tempo reale su Firebase.</p>
     <a href="index.html">← Torna al sito</a>
   </div>
 </div>
 
 <script>
-const allScreens = ['home','gioca','amici','profilo','shop','training','result'];
+const screens = ['home','gioca','amici','profilo','genitori','shop','onboarding'];
+const onbSlides = [
+  'screens/s1_launch.png',
+  'screens/onboarding_avatar.png',
+  'screens/onboarding_cono.png',
+  'screens/onboarding_connetti.png',
+  'screens/onboarding_ricerca.png',
+  'screens/onboarding_evolvi.png',
+];
+let onbIdx = 0;
 
 function goScreen(name) {
-  allScreens.forEach(s => {
-    const el = document.getElementById('screen-' + s);
-    if (el) { el.style.display = 'none'; el.classList.remove('active'); }
+  screens.forEach(s => {
+    const el = document.getElementById('s-' + s);
+    if (el) { el.classList.remove('active'); el.style.display = 'none'; }
     const btn = document.getElementById('ctrl-' + s);
     if (btn) btn.classList.remove('active');
   });
-  const t = document.getElementById('screen-' + name);
-  if (t) { t.style.display = 'flex'; requestAnimationFrame(() => t.classList.add('active')); }
+  const t = document.getElementById('s-' + name);
+  if (t) { t.style.display = 'block'; requestAnimationFrame(() => t.classList.add('active')); }
   const cb = document.getElementById('ctrl-' + name);
   if (cb) cb.classList.add('active');
-  if (name === 'result') setTimeout(() => { const b = document.getElementById('xp-bar'); if(b) b.style.width = '64%'; }, 350);
-  if (name === 'training') startTraining(); else stopTraining();
 }
 
-function switchTab(tab) {
-  ['personalizza','export','genitori'].forEach(t => {
-    const el = document.getElementById('tab-' + t);
-    if (el) el.style.display = 'none';
-  });
-  const target = document.getElementById('tab-' + tab);
-  if (target) target.style.display = 'block';
-  document.querySelectorAll('.profilo-tab').forEach(btn => btn.classList.remove('active'));
-  const tabMap = {'personalizza':0,'export':1,'genitori':2};
-  const tabs = document.querySelectorAll('.profilo-tab');
-  if (tabs[tabMap[tab]]) tabs[tabMap[tab]].classList.add('active');
+function goOnb(idx) {
+  onbIdx = idx;
+  goScreen('onboarding');
+  updateOnb();
 }
 
-function toggleAssign(row) {
-  const check = row.querySelector('.assign-check');
-  if (check.classList.contains('on')) { check.classList.remove('on'); check.textContent = '□'; }
-  else { check.classList.add('on'); check.textContent = '✓'; }
+function onbNav(dir) {
+  onbIdx = Math.max(0, Math.min(onbSlides.length - 1, onbIdx + dir));
+  updateOnb();
 }
 
-let tInterval = null;
-let tSec = 82, tocchi = 23, score = 680, streak = 5, ms = 210, cIdx = 0;
-const cStates = [['on-cyan','on-lime',''],['','on-cyan','on-lime'],['on-lime','','on-cyan'],['on-coral','on-cyan',''],['','on-lime','on-cyan']];
-
-function startTraining() {
-  stopTraining();
-  tSec = 82; tocchi = 23; score = 680; streak = 5; ms = 210; cIdx = 0;
-  tInterval = setInterval(() => {
-    tSec = Math.max(0, tSec - 1);
-    const m = Math.floor(tSec / 60), s = tSec % 60;
-    const tv = document.getElementById('timer-val');
-    if (tv) tv.textContent = m + ':' + String(s).padStart(2,'0');
-    const pf = document.getElementById('prog-fill');
-    if (pf) pf.style.width = ((150 - tSec) / 150 * 100) + '%';
-    if (tSec % 2 === 0) {
-      cIdx = (cIdx + 1) % cStates.length;
-      const st = cStates[cIdx];
-      ['cone1','cone2','cone3'].forEach((id, i) => { const el = document.getElementById(id); if(el) el.className = 'cone-led ' + st[i]; });
-      tocchi += Math.floor(Math.random()*2)+1; score += Math.floor(Math.random()*22)+8;
-      streak = Math.min(streak + (Math.random()>.3?1:0), 12);
-      ms = Math.max(140, ms + (Math.random()>.5?-7:5));
-      const lt = document.getElementById('lt'), ls = document.getElementById('ls');
-      const lstr = document.getElementById('lstr'), lms = document.getElementById('lms');
-      if(lt) lt.textContent = tocchi; if(ls) ls.textContent = score;
-      if(lstr) lstr.textContent = streak+'🔥'; if(lms) lms.textContent = ms+'ms';
-    }
-    if (tSec === 0) { stopTraining(); goScreen('result'); }
-  }, 1000);
+function updateOnb() {
+  document.getElementById('onb-img').src = onbSlides[onbIdx];
+  for (let i = 0; i < onbSlides.length; i++) {
+    const d = document.getElementById('dot-' + i);
+    if (d) d.className = 'onb-dot' + (i === onbIdx ? ' active' : '');
+  }
+  document.getElementById('onb-prev').className = 'onb-btn' + (onbIdx === 0 ? ' hidden' : '');
+  document.getElementById('onb-next').className = 'onb-btn' + (onbIdx === onbSlides.length - 1 ? ' hidden' : '');
 }
-function stopTraining() { if (tInterval) { clearInterval(tInterval); tInterval = null; } }
 
-// init
 goScreen('home');
-// show genitori tab by default on profilo
-document.getElementById('tab-personalizza').style.display='none';
-document.getElementById('tab-export').style.display='none';
-document.getElementById('tab-genitori').style.display='block';
 </script>
 </body>
 </html>
