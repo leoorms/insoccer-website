@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InSoccer — App Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:   #05060A;
+    --bg:     #0A0C14;
+    --bgmid:  #10141F;
+    --border: rgba(255,255,255,0.07);
+    --text:   #F0F2F8;
+    --sub:    #8B92A8;
+    --ghost:  #3A3F52;
+    --cyan:   #00D4FF;
+    --coral:  #FF2D55;
+    --gold:   #FFD700;
+    --lime:   #39FF14;
+    --ease:   cubic-bezier(0.22,1,0.36,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--void);
+    color: var(--text);
+    font-family: 'Chakra Petch', system-ui, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  #nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 60px;
+    background: rgba(5,6,10,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+  }
+  .nav-logo { font-family: 'Russo One', sans-serif; font-size: 1.3rem; letter-spacing: 0.06em; text-decoration: none; color: var(--text); }
+  .nav-logo em { color: var(--cyan); font-style: normal; }
+  .nav-back {
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--sub); text-decoration: none; display: flex; align-items: center; gap: 0.5rem;
+    transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--cyan); }
+  .nav-badge {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--cyan); border: 1px solid rgba(0,212,255,0.3); padding: 0.25rem 0.7rem;
+    clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+  }
+
+  /* ── PAGE LAYOUT ── */
+  .page-wrap {
+    padding-top: 80px; padding-bottom: 60px;
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh;
+  }
+  .page-header {
+    text-align: center; margin-bottom: 3rem; padding: 0 1rem;
+  }
+  .page-header .eyebrow {
+    display: flex; align-items: center; justify-content: center; gap: 0.7rem;
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--cyan); margin-bottom: 1rem;
+  }
+  .page-header .eyebrow::before,
+  .page-header .eyebrow::after { content: ''; display: block; width: 28px; height: 1px; background: var(--cyan); }
+  .page-header h1 {
+    font-family: 'Russo One', sans-serif; font-size: clamp(1.8rem, 4vw, 2.8rem);
+    letter-spacing: 0.04em; line-height: 1.1; margin-bottom: 0.75rem;
+  }
+  .page-header h1 span { color: var(--cyan); }
+  .page-header p { color: var(--sub); font-size: 0.9rem; max-width: 440px; margin: 0 auto; }
+
+  /* ── PHONE FRAME ── */
+  .phone-scene {
+    position: relative; display: flex; justify-content: center; align-items: flex-start;
+  }
+  .phone-frame {
+    width: 375px;
+    height: 740px;
+    background: #08090F;
+    border-radius: 46px;
+    border: 2px solid rgba(255,255,255,0.12);
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.8),
+      0 40px 80px rgba(0,0,0,0.7),
+      0 0 60px rgba(0,212,255,0.08),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .phone-notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 34px;
+    background: #08090F;
+    border-radius: 0 0 20px 20px;
+    z-index: 50;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .phone-screen {
+    width: 100%; height: 100%;
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ── SCREENS ── */
+  .screen {
+    position: absolute; inset: 0;
+    background: var(--void);
+    display: none; flex-direction: column;
+    opacity: 0; transition: opacity 0.3s var(--ease);
+  }
+  .screen.active { display: flex; opacity: 1; }
+
+  /* status bar */
+  .status-bar {
+    height: 44px; padding: 12px 20px 0;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-shrink: 0; z-index: 10;
+  }
+  .status-time { font-size: 0.75rem; font-weight: 700; }
+  .status-icons { display: flex; gap: 5px; align-items: center; }
+  .status-icons span { font-size: 0.6rem; color: var(--sub); }
+
+  /* bottom nav */
+  .bottom-nav {
+    height: 72px; background: rgba(8,9,15,0.97);
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-around;
+    padding-bottom: 8px; flex-shrink: 0;
+    backdrop-filter: blur(20px);
+  }
+  .bnav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    cursor: pointer; padding: 6px 14px; border-radius: 12px;
+    transition: background 0.2s;
+    border: none; background: transparent;
+  }
+  .bnav-item:hover { background: rgba(255,255,255,0.04); }
+  .bnav-item .icon { font-size: 1.1rem; opacity: 0.45; transition: opacity 0.2s, filter 0.2s; }
+  .bnav-item .label { font-size: 0.52rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sub); transition: color 0.2s; }
+  .bnav-item.active .icon { opacity: 1; filter: drop-shadow(0 0 6px var(--cyan)); }
+  .bnav-item.active .label { color: var(--cyan); }
+
+  .screen-content { flex: 1; overflow-y: auto; overflow-x: hidden; }
+  .screen-content::-webkit-scrollbar { display: none; }
+
+  /* ── HOME SCREEN ── */
+  .home-hero {
+    background: linear-gradient(160deg, #0D1525 0%, #0A0C14 60%);
+    padding: 16px 20px 0;
+    position: relative; overflow: hidden;
+  }
+  .home-hero::before {
+    content: ''; position: absolute; top: -60px; right: -60px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,212,255,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .home-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .home-greeting { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--sub); }
+  .home-name { font-family: 'Russo One', sans-serif; font-size: 1.3rem; color: var(--text); }
+  .conn-pill {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(0,0,0,0.5); padding: 5px 10px;
+    clip-path: polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);
+    border: 1px solid rgba(57,255,20,0.3);
+    font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lime);
+  }
+  .conn-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); animation: pulse 1.4s ease-in-out infinite alternate; }
+  @keyframes pulse { from { opacity: 1; } to { opacity: 0.35; } }
+
+  /* FC25 card */
+  .card-wrap { display: flex; justify-content: center; padding: 8px 0 20px; }
+  .fc-card {
+    width: 130px; height: 180px;
+    background: linear-gradient(145deg, #1a1000 0%, #2a1800 40%, #1a0800 100%);
+    border-radius: 14px;
+    border: 1px solid rgba(255,180,0,0.25);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 20px rgba(255,180,0,0.08);
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 12px 8px 8px;
+    cursor: pointer; transition: transform 0.3s var(--ease), box-shadow 0.3s;
+  }
+  .fc-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 16px 40px rgba(0,0,0,0.7), 0 0 30px rgba(255,180,0,0.18); }
+  .fc-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,200,0,0.08) 0%, transparent 60%);
+  }
+  .card-rating { font-family: 'Russo One', sans-serif; font-size: 1.6rem; color: var(--gold); line-height: 1; z-index: 1; }
+  .card-pos { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; color: var(--gold); opacity: 0.8; z-index: 1; margin-bottom: 6px; }
+  .card-avatar {
+    width: 68px; height: 68px; border-radius: 50%;
+    background: linear-gradient(135deg, #1e3a5f 0%, #0d2040 100%);
+    border: 2px solid rgba(255,180,0,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; z-index: 1; margin-bottom: 6px;
+  }
+  .card-name { font-family: 'Russo One', sans-serif; font-size: 0.6rem; letter-spacing: 0.08em; color: var(--text); z-index: 1; margin-bottom: 6px; }
+  .card-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px 8px; z-index: 1; width: 100%; }
+  .card-stat { text-align: center; }
+  .card-stat .v { font-family: 'Russo One', sans-serif; font-size: 0.65rem; color: var(--gold); display: block; }
+  .card-stat .k { font-size: 0.42rem; font-weight: 700; letter-spacing: 0.06em; color: rgba(255,180,0,0.6); display: block; }
+  .card-flag { font-size: 0.7rem; z-index: 1; margin-top: 2px; }
+
+  /* stats grid */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 0 16px 16px; }
+  .stat-tile {
+    background: var(--bgmid);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 8px; text-align: center;
+    clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+  }
+  .stat-tile .sv { font-family: 'Russo One', sans-serif; font-size: 1.1rem; color: var(--cyan); display: block; }
+  .stat-tile .sk { font-size: 0.52rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sub); display: block; margin-top: 2px; }
+
+  .section-label {
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--sub); padding: 0 16px 8px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* sessions */
+  .session-list { padding: 0 16px 8px; display: flex; flex-direction: column; gap: 6px; }
+  .session-row {
+    background: var(--bgmid); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; display: flex; align-items: center; gap: 10px;
+  }
+  .session-icon { font-size: 1.1rem; }
+  .session-info { flex: 1; }
+  .session-name { font-size: 0.72rem; font-weight: 600; }
+  .session-meta { font-size: 0.58rem; color: var(--sub); margin-top: 1px; }
+  .session-score { font-family: 'Russo One', sans-serif; font-size: 0.9rem; color: var(--cyan); }
+
+  /* ── ALLENATI SCREEN ── */
+  .screen-header { padding: 12px 16px 8px; }
+  .screen-title { font-family: 'Russo One', sans-serif; font-size: 1.5rem; }
+  .screen-sub { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--cyan); margin-top: 2px; }
+
+  .level-list { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
+  .level-row {
+    background: var(--bgmid);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+    transition: transform 0.2s var(--ease), box-shadow 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .level-row::before {
+    content: ''; position: absolute; inset: 0;
+    border-radius: 12px; opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .level-row:hover { transform: translateX(3px); }
+  .level-row:hover::before { opacity: 1; }
+
+  .level-row.cyan { border: 1px solid rgba(0,212,255,0.25); }
+  .level-row.cyan::before { background: linear-gradient(90deg, rgba(0,212,255,0.05) 0%, transparent 100%); }
+  .level-row.cyan:hover { box-shadow: 0 0 20px rgba(0,212,255,0.1); }
+
+  .level-row.gold { border: 1px solid rgba(255,215,0,0.25); }
+  .level-row.gold::before { background: linear-gradient(90deg, rgba(255,215,0,0.05) 0%, transparent 100%); }
+  .level-row.gold:hover { box-shadow: 0 0 20px rgba(255,215,0,0.1); }
+
+  .level-row.coral { border: 1px solid rgba(255,45,85,0.25); }
+  .level-row.coral::before { background: linear-gradient(90deg, rgba(255,45,85,0.05) 0%, transparent 100%); }
+  .level-row.coral:hover { box-shadow: 0 0 20px rgba(255,45,85,0.1); }
+
+  .level-row.locked { border: 1px solid rgba(255,255,255,0.05); opacity: 0.5; cursor: default; }
+  .level-row.locked:hover { transform: none; box-shadow: none; }
+
+  .level-icon-wrap {
+    width: 52px; height: 52px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+    clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+  }
+  .level-icon-wrap.cyan { background: linear-gradient(135deg, rgba(0,212,255,0.3) 0%, rgba(0,212,255,0.08) 100%); }
+  .level-icon-wrap.gold { background: linear-gradient(135deg, rgba(255,215,0,0.3) 0%, rgba(255,215,0,0.08) 100%); }
+  .level-icon-wrap.coral { background: linear-gradient(135deg, rgba(255,45,85,0.3) 0%, rgba(255,45,85,0.08) 100%); }
+  .level-icon-wrap.locked { background: rgba(255,255,255,0.04); }
+
+  .level-info { flex: 1; }
+  .level-name { font-family: 'Russo One', sans-serif; font-size: 0.85rem; }
+  .level-desc { font-size: 0.6rem; color: var(--sub); margin-top: 2px; }
+  .level-meta { display: flex; gap: 8px; align-items: center; margin-top: 5px; }
+  .stars { display: flex; gap: 2px; }
+  .star { font-size: 0.55rem; color: var(--ghost); }
+  .star.on { color: var(--gold); }
+  .level-dur { font-size: 0.55rem; color: var(--sub); font-weight: 600; }
+  .level-cones { font-size: 0.55rem; color: var(--lime); font-weight: 600; }
+  .level-chevron { font-size: 0.8rem; color: var(--sub); flex-shrink: 0; }
+  .level-lock { font-size: 0.9rem; color: var(--ghost); flex-shrink: 0; }
+
+  /* ── TRAINING SCREEN ── */
+  .training-bg {
+    flex: 1; display: flex; flex-direction: column;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.08) 0%, transparent 60%);
+    padding: 0 16px;
+  }
+  .training-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 12px; }
+  .training-title { font-family: 'Russo One', sans-serif; font-size: 1rem; color: var(--cyan); }
+  .training-close {
+    width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; cursor: pointer; transition: background 0.2s;
+    font-family: inherit; color: var(--text);
+  }
+  .training-close:hover { background: rgba(255,45,85,0.15); }
+
+  .timer-display {
+    text-align: center; padding: 8px 0 16px;
+  }
+  .timer-big { font-family: 'Russo One', sans-serif; font-size: 3.5rem; color: var(--text); line-height: 1; }
+  .timer-big span { color: var(--cyan); }
+  .timer-label { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sub); margin-top: 4px; }
+
+  .progress-bar-wrap { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; margin-bottom: 16px; overflow: hidden; }
+  .progress-bar-fill {
+    height: 100%; border-radius: 2px;
+    background: linear-gradient(90deg, var(--cyan) 0%, #0088CC 100%);
+    width: 45%; transition: width 0.5s ease;
+    box-shadow: 0 0 8px rgba(0,212,255,0.6);
+  }
+
+  .cones-row { display: flex; justify-content: center; gap: 20px; margin-bottom: 16px; }
+  .cone-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .cone-shape {
+    width: 52px; height: 52px; position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cone-shape svg { position: absolute; inset: 0; }
+  .cone-led { width: 12px; height: 12px; border-radius: 50%; background: var(--ghost); z-index: 1; transition: background 0.3s, box-shadow 0.3s; }
+  .cone-led.on-cyan { background: var(--cyan); box-shadow: 0 0 12px var(--cyan), 0 0 4px var(--cyan); animation: ledPulse 0.6s ease-in-out infinite alternate; }
+  .cone-led.on-lime { background: var(--lime); box-shadow: 0 0 12px var(--lime), 0 0 4px var(--lime); }
+  .cone-led.on-coral { background: var(--coral); box-shadow: 0 0 12px var(--coral); animation: ledPulse 0.4s ease-in-out infinite alternate; }
+  @keyframes ledPulse { from { opacity: 1; } to { opacity: 0.5; } }
+  .cone-label { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; color: var(--sub); text-transform: uppercase; }
+
+  .live-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .live-stat {
+    background: var(--bgmid); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px; text-align: center;
+    clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+  }
+  .live-stat .lv { font-family: 'Russo One', sans-serif; font-size: 1.4rem; display: block; }
+  .live-stat .lk { font-size: 0.52rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sub); display: block; margin-top: 2px; }
+  .live-stat.cyan .lv { color: var(--cyan); text-shadow: 0 0 12px rgba(0,212,255,0.5); }
+  .live-stat.coral .lv { color: var(--coral); }
+  .live-stat.gold .lv { color: var(--gold); }
+  .live-stat.lime .lv { color: var(--lime); }
+
+  .event-feed { background: var(--bgmid); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+  .event-feed-label { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--sub); margin-bottom: 6px; }
+  .event-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .event-item:last-child { border-bottom: none; }
+  .event-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .event-dot.cyan { background: var(--cyan); }
+  .event-dot.lime { background: var(--lime); }
+  .event-dot.gold { background: var(--gold); }
+  .event-text { font-size: 0.6rem; color: var(--sub); flex: 1; }
+  .event-time { font-size: 0.55rem; color: var(--ghost); }
+
+  /* ── RESULT SCREEN ── */
+  .result-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 16px; }
+  .result-badge {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,212,255,0.2) 0%, rgba(0,212,255,0.05) 70%);
+    border: 2px solid rgba(0,212,255,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.2rem; margin-bottom: 12px;
+    box-shadow: 0 0 30px rgba(0,212,255,0.2);
+  }
+  .result-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cyan); margin-bottom: 4px; }
+  .result-score { font-family: 'Russo One', sans-serif; font-size: 3rem; color: var(--text); margin-bottom: 4px; line-height: 1; }
+  .result-max { font-size: 0.7rem; color: var(--sub); margin-bottom: 16px; }
+
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-bottom: 16px; }
+  .result-tile {
+    background: var(--bgmid); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px; text-align: center;
+    clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+  }
+  .result-tile .rv { font-family: 'Russo One', sans-serif; font-size: 1.2rem; display: block; }
+  .result-tile .rk { font-size: 0.52rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sub); display: block; margin-top: 2px; }
+  .result-tile.cyan .rv { color: var(--cyan); }
+  .result-tile.gold .rv { color: var(--gold); }
+  .result-tile.lime .rv { color: var(--lime); }
+  .result-tile.coral .rv { color: var(--coral); }
+
+  .xp-bar-wrap { width: 100%; margin-bottom: 16px; }
+  .xp-label { display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--sub); margin-bottom: 4px; }
+  .xp-track { height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+  .xp-fill {
+    height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--gold) 0%, #FFA500 100%);
+    width: 0%;
+    transition: width 1.2s var(--ease);
+    box-shadow: 0 0 8px rgba(255,215,0,0.5);
+  }
+
+  .result-actions { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+  .btn-primary {
+    width: 100%; padding: 13px;
+    background: var(--cyan); color: var(--void);
+    font-family: 'Russo One', sans-serif; font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase;
+    border: none; cursor: pointer;
+    clip-path: polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+    transition: box-shadow 0.2s;
+  }
+  .btn-primary:hover { box-shadow: 0 0 24px rgba(0,212,255,0.5); }
+  .btn-ghost {
+    width: 100%; padding: 12px;
+    background: rgba(255,255,255,0.05); color: var(--sub);
+    font-family: 'Russo One', sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+    border: 1px solid var(--border); cursor: pointer;
+    clip-path: polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+    transition: background 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+
+  /* ── LEADERBOARD ── */
+  .lb-list { padding: 0 16px; display: flex; flex-direction: column; gap: 6px; }
+  .lb-row {
+    background: var(--bgmid); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; display: flex; align-items: center; gap: 10px;
+    transition: border-color 0.2s;
+  }
+  .lb-row.me { border-color: rgba(0,212,255,0.4); background: rgba(0,212,255,0.04); }
+  .lb-rank { font-family: 'Russo One', sans-serif; font-size: 0.9rem; width: 24px; text-align: center; flex-shrink: 0; }
+  .lb-rank.gold { color: var(--gold); }
+  .lb-rank.silver { color: #C0C0C0; }
+  .lb-rank.bronze { color: #CD7F32; }
+  .lb-avatar { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+  .lb-info { flex: 1; }
+  .lb-name { font-size: 0.72rem; font-weight: 600; }
+  .lb-country { font-size: 0.55rem; color: var(--sub); }
+  .lb-pts { font-family: 'Russo One', sans-serif; font-size: 0.9rem; color: var(--cyan); flex-shrink: 0; }
+  .lb-me-tag { font-size: 0.5rem; font-weight: 700; letter-spacing: 0.1em; color: var(--cyan); background: rgba(0,212,255,0.12); padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
+
+  .lb-weekly-tag {
+    margin: 8px 16px;
+    background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.2);
+    border-radius: 8px; padding: 8px 12px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.6rem; color: var(--gold); font-weight: 600;
+  }
+
+  /* ── OUTER PAGE CONTROLS ── */
+  .demo-controls {
+    margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+    padding: 0 1rem;
+  }
+  .ctrl-btn {
+    padding: 0.6rem 1.4rem; font-family: 'Chakra Petch', sans-serif;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    border: 1px solid var(--border); background: var(--bgmid); color: var(--sub);
+    clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+    cursor: pointer; transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .ctrl-btn:hover, .ctrl-btn.active { color: var(--cyan); border-color: rgba(0,212,255,0.4); box-shadow: 0 0 16px rgba(0,212,255,0.1); }
+
+  .demo-hint {
+    margin-top: 1rem; font-size: 0.72rem; color: var(--sub); text-align: center;
+    display: flex; align-items: center; gap: 0.5rem; justify-content: center;
+  }
+  .demo-hint::before, .demo-hint::after { content: ''; display: block; width: 20px; height: 1px; background: var(--border); }
+
+  /* ── FOOTER ── */
+  .demo-footer {
+    margin-top: 4rem; border-top: 1px solid var(--border);
+    padding: 2rem; text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+  }
+  .demo-footer .logo { font-family: 'Russo One', sans-serif; font-size: 1.1rem; letter-spacing: 0.06em; }
+  .demo-footer .logo em { color: var(--cyan); font-style: normal; }
+  .demo-footer p { font-size: 0.75rem; color: var(--sub); }
+  .demo-footer a {
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--cyan); text-decoration: none; border-bottom: 1px solid rgba(0,212,255,0.3);
+    transition: border-color 0.2s;
+  }
+  .demo-footer a:hover { border-color: var(--cyan); }
+
+  /* glow ambient */
+  .ambient {
+    position: fixed; pointer-events: none; z-index: 0;
+    border-radius: 50%; filter: blur(80px); opacity: 0.04;
+  }
+  .ambient-1 { width: 600px; height: 600px; background: var(--cyan); top: -200px; left: -200px; }
+  .ambient-2 { width: 400px; height: 400px; background: var(--coral); bottom: -100px; right: -100px; }
+</style>
+</head>
+<body>
+
+<div class="ambient ambient-1"></div>
+<div class="ambient ambient-2"></div>
+
+<nav id="nav">
+  <a href="index.html" class="nav-back">← Torna al sito</a>
+  <a href="index.html" class="nav-logo"><em>IN</em>SOCCER</a>
+  <span class="nav-badge">App Demo</span>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <div class="eyebrow">Prova l'esperienza</div>
+    <h1>L'app <span>InSoccer</span></h1>
+    <p>Demo interattiva delle schermate principali. Naviga tra le sezioni esattamente come nell'app reale.</p>
+  </div>
+
+  <div class="phone-scene">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+
+        <!-- ═══ HOME ═══ -->
+        <div class="screen active" id="screen-home">
+          <div class="status-bar">
+            <span class="status-time">21:34</span>
+            <div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+          </div>
+          <div class="screen-content">
+            <div class="home-hero">
+              <div class="home-header">
+                <div>
+                  <div class="home-greeting">Bentornato</div>
+                  <div class="home-name">MARCO R.</div>
+                </div>
+                <div class="conn-pill"><div class="conn-dot"></div>3 CONI</div>
+              </div>
+              <div class="card-wrap">
+                <div class="fc-card">
+                  <div class="card-rating">72</div>
+                  <div class="card-pos">CAM</div>
+                  <div class="card-avatar">⚽</div>
+                  <div class="card-name">MARCO R.</div>
+                  <div class="card-stats">
+                    <div class="card-stat"><span class="v">68</span><span class="k">PAC</span></div>
+                    <div class="card-stat"><span class="v">74</span><span class="k">DRI</span></div>
+                    <div class="card-stat"><span class="v">71</span><span class="k">PAS</span></div>
+                    <div class="card-stat"><span class="v">65</span><span class="k">SHO</span></div>
+                    <div class="card-stat"><span class="v">58</span><span class="k">DEF</span></div>
+                    <div class="card-stat"><span class="v">69</span><span class="k">PHY</span></div>
+                  </div>
+                  <div class="card-flag">🇮🇹</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stats-grid" style="margin-top:12px;">
+              <div class="stat-tile"><span class="sv">47</span><span class="sk">Sessioni</span></div>
+              <div class="stat-tile"><span class="sv" style="color:var(--coral)">12.4k</span><span class="sk">XP Totale</span></div>
+              <div class="stat-tile"><span class="sv" style="color:var(--gold)">8🔥</span><span class="sk">Streak</span></div>
+            </div>
+
+            <div class="section-label" style="margin-top:16px;">Ultime sessioni</div>
+            <div class="session-list">
+              <div class="session-row">
+                <div class="session-icon">⚡</div>
+                <div class="session-info">
+                  <div class="session-name">Passaggi Precisi</div>
+                  <div class="session-meta">Ieri · 3:42 · ×2 conetti</div>
+                </div>
+                <div class="session-score">847</div>
+              </div>
+              <div class="session-row">
+                <div class="session-icon">🎯</div>
+                <div class="session-info">
+                  <div class="session-name">Riflessi Pro</div>
+                  <div class="session-meta">2 giorni fa · 2:58</div>
+                </div>
+                <div class="session-score" style="color:var(--gold)">920</div>
+              </div>
+              <div class="session-row">
+                <div class="session-icon">🏃</div>
+                <div class="session-info">
+                  <div class="session-name">Dribbling Base</div>
+                  <div class="session-meta">3 giorni fa · 4:10</div>
+                </div>
+                <div class="session-score" style="color:var(--sub)">612</div>
+              </div>
+            </div>
+            <div style="height:16px;"></div>
+          </div>
+          <div class="bottom-nav">
+            <button class="bnav-item active" onclick="goScreen('home')"><span class="icon">🏠</span><span class="label">Home</span></button>
+            <button class="bnav-item" onclick="goScreen('allenati')"><span class="icon">⚽</span><span class="label">Allenati</span></button>
+            <button class="bnav-item" onclick="goScreen('leaderboard')"><span class="icon">🏆</span><span class="label">Globale</span></button>
+          </div>
+        </div>
+
+        <!-- ═══ ALLENATI ═══ -->
+        <div class="screen" id="screen-allenati">
+          <div class="status-bar">
+            <span class="status-time">21:34</span>
+            <div class="status-icons"><span>●●●</span><span>🔋</span></div>
+          </div>
+          <div class="screen-content">
+            <div class="screen-header">
+              <div class="screen-title">ALLENATI</div>
+              <div class="screen-sub">Scegli un livello</div>
+            </div>
+            <div class="level-list">
+              <div class="level-row cyan" onclick="goScreen('training')">
+                <div class="level-icon-wrap cyan">⚡</div>
+                <div class="level-info">
+                  <div class="level-name" style="color:var(--cyan)">Dribbling Base</div>
+                  <div class="level-desc">Tocchi veloci attorno al conetto</div>
+                  <div class="level-meta">
+                    <div class="stars"><span class="star on">★</span><span class="star">★</span><span class="star">★</span></div>
+                    <span class="level-dur">120s</span>
+                    <span class="level-cones">🔵 ×1</span>
+                  </div>
+                </div>
+                <span class="level-chevron">›</span>
+              </div>
+              <div class="level-row cyan" onclick="goScreen('training')">
+                <div class="level-icon-wrap cyan">🎯</div>
+                <div class="level-info">
+                  <div class="level-name" style="color:var(--cyan)">Passaggi Precisi</div>
+                  <div class="level-desc">Precisione e velocità di esecuzione</div>
+                  <div class="level-meta">
+                    <div class="stars"><span class="star on">★</span><span class="star">★</span><span class="star">★</span></div>
+                    <span class="level-dur">180s</span>
+                    <span class="level-cones">🔵 ×1</span>
+                  </div>
+                </div>
+                <span class="level-chevron">›</span>
+              </div>
+              <div class="level-row gold" onclick="goScreen('training')">
+                <div class="level-icon-wrap gold">⚔️</div>
+                <div class="level-info">
+                  <div class="level-name" style="color:var(--gold)">Riflessi Pro</div>
+                  <div class="level-desc">Reagisci ai LED, doppio conetto</div>
+                  <div class="level-meta">
+                    <div class="stars"><span class="star on">★</span><span class="star on">★</span><span class="star">★</span></div>
+                    <span class="level-dur">150s</span>
+                    <span class="level-cones" style="color:var(--gold)">🟡 ×2</span>
+                  </div>
+                </div>
+                <span class="level-chevron" style="color:var(--gold)">›</span>
+              </div>
+              <div class="level-row coral locked">
+                <div class="level-icon-wrap locked">🔒</div>
+                <div class="level-info">
+                  <div class="level-name" style="color:var(--ghost)">Combo Master</div>
+                  <div class="level-desc">Completa Riflessi Pro (score ≥ 75)</div>
+                  <div class="level-meta">
+                    <div class="stars"><span class="star on">★</span><span class="star on">★</span><span class="star on">★</span></div>
+                    <span class="level-dur">200s</span>
+                    <span class="level-cones" style="color:var(--ghost)">×3</span>
+                  </div>
+                </div>
+                <span class="level-lock">🔒</span>
+              </div>
+            </div>
+            <div style="height:16px;"></div>
+          </div>
+          <div class="bottom-nav">
+            <button class="bnav-item" onclick="goScreen('home')"><span class="icon">🏠</span><span class="label">Home</span></button>
+            <button class="bnav-item active" onclick="goScreen('allenati')"><span class="icon">⚽</span><span class="label">Allenati</span></button>
+            <button class="bnav-item" onclick="goScreen('leaderboard')"><span class="icon">🏆</span><span class="label">Globale</span></button>
+          </div>
+        </div>
+
+        <!-- ═══ TRAINING LIVE ═══ -->
+        <div class="screen" id="screen-training">
+          <div class="status-bar">
+            <span class="status-time">21:34</span>
+            <div class="status-icons"><span>●●●</span><span>🔋</span></div>
+          </div>
+          <div class="training-bg">
+            <div class="training-header">
+              <div class="training-title">RIFLESSI PRO</div>
+              <button class="training-close" onclick="goScreen('allenati')">✕</button>
+            </div>
+            <div class="timer-display">
+              <div class="timer-big"><span id="timer-val">1:22</span></div>
+              <div class="timer-label">Tempo rimasto</div>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+            <div class="cones-row">
+              <div class="cone-item">
+                <div class="cone-shape">
+                  <svg viewBox="0 0 52 52" fill="none"><polygon points="26,4 48,44 4,44" fill="rgba(0,212,255,0.12)" stroke="rgba(0,212,255,0.4)" stroke-width="1.5"/></svg>
+                  <div class="cone-led on-cyan" id="cone1-led"></div>
+                </div>
+                <div class="cone-label">Cono 1</div>
+              </div>
+              <div class="cone-item">
+                <div class="cone-shape">
+                  <svg viewBox="0 0 52 52" fill="none"><polygon points="26,4 48,44 4,44" fill="rgba(57,255,20,0.12)" stroke="rgba(57,255,20,0.4)" stroke-width="1.5"/></svg>
+                  <div class="cone-led on-lime" id="cone2-led"></div>
+                </div>
+                <div class="cone-label">Cono 2</div>
+              </div>
+              <div class="cone-item">
+                <div class="cone-shape">
+                  <svg viewBox="0 0 52 52" fill="none"><polygon points="26,4 48,44 4,44" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/></svg>
+                  <div class="cone-led" id="cone3-led"></div>
+                </div>
+                <div class="cone-label">Cono 3</div>
+              </div>
+            </div>
+            <div class="live-stats">
+              <div class="live-stat cyan"><span class="lv" id="live-tocchi">23</span><span class="lk">Tocchi</span></div>
+              <div class="live-stat gold"><span class="lv" id="live-score">680</span><span class="lk">Score</span></div>
+              <div class="live-stat lime"><span class="lv" id="live-streak">5🔥</span><span class="lk">Streak</span></div>
+              <div class="live-stat coral"><span class="lv" id="live-ms">210ms</span><span class="lk">Reazione</span></div>
+            </div>
+            <div class="event-feed">
+              <div class="event-feed-label">Live feed</div>
+              <div class="event-item"><div class="event-dot cyan"></div><div class="event-text">Tocco cono 1 — rilevato</div><div class="event-time">21:22</div></div>
+              <div class="event-item"><div class="event-dot lime"></div><div class="event-text">Tocco cono 2 — +15 XP</div><div class="event-time">21:21</div></div>
+              <div class="event-item"><div class="event-dot gold"></div><div class="event-text">Streak ×5 — bonus attivato</div><div class="event-time">21:20</div></div>
+            </div>
+            <div style="height:12px;"></div>
+          </div>
+          <div style="padding:12px 16px; flex-shrink:0;">
+            <button class="btn-primary" onclick="goScreen('result')">TERMINA SESSIONE</button>
+          </div>
+        </div>
+
+        <!-- ═══ RESULT ═══ -->
+        <div class="screen" id="screen-result">
+          <div class="status-bar">
+            <span class="status-time">21:39</span>
+            <div class="status-icons"><span>●●●</span><span>🔋</span></div>
+          </div>
+          <div class="screen-content">
+            <div class="result-wrap">
+              <div class="result-badge">🏆</div>
+              <div class="result-label">Sessione completata</div>
+              <div class="result-score">847</div>
+              <div class="result-max">/ 1000 punti · Personal best 🎉</div>
+              <div class="result-grid">
+                <div class="result-tile cyan"><span class="rv">31</span><span class="rk">Tocchi</span></div>
+                <div class="result-tile coral"><span class="rv">198ms</span><span class="rk">Reazione avg</span></div>
+                <div class="result-tile gold"><span class="rv">×7</span><span class="rk">Max streak</span></div>
+                <div class="result-tile lime"><span class="rv">3:18</span><span class="rk">Durata</span></div>
+              </div>
+              <div class="xp-bar-wrap">
+                <div class="xp-label"><span>XP guadagnato: +320</span><span>Lv 12 → 13</span></div>
+                <div class="xp-track"><div class="xp-fill" id="xp-bar"></div></div>
+              </div>
+              <div class="result-actions">
+                <button class="btn-primary" onclick="goScreen('allenati')">RIVAI</button>
+                <button class="btn-ghost" onclick="goScreen('home')">Torna alla home</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ LEADERBOARD ═══ -->
+        <div class="screen" id="screen-leaderboard">
+          <div class="status-bar">
+            <span class="status-time">21:34</span>
+            <div class="status-icons"><span>●●●</span><span>🔋</span></div>
+          </div>
+          <div class="screen-content">
+            <div class="screen-header">
+              <div class="screen-title">GLOBALE</div>
+              <div class="screen-sub">Classifica settimanale</div>
+            </div>
+            <div class="lb-weekly-tag">🏅 Settimana 26 · Termina tra 3 giorni</div>
+            <div class="lb-list">
+              <div class="lb-row"><div class="lb-rank gold">1</div><div class="lb-avatar">⚽</div><div class="lb-info"><div class="lb-name">Luca T.</div><div class="lb-country">🇮🇹 Italia</div></div><div class="lb-pts">4.210</div></div>
+              <div class="lb-row"><div class="lb-rank silver">2</div><div class="lb-avatar">🦁</div><div class="lb-info"><div class="lb-name">Ahmed K.</div><div class="lb-country">🇩🇪 Germania</div></div><div class="lb-pts">3.890</div></div>
+              <div class="lb-row"><div class="lb-rank bronze">3</div><div class="lb-avatar">🐆</div><div class="lb-info"><div class="lb-name">Carlos M.</div><div class="lb-country">🇪🇸 Spagna</div></div><div class="lb-pts">3.540</div></div>
+              <div class="lb-row"><div class="lb-rank" style="color:var(--sub)">4</div><div class="lb-avatar">🦊</div><div class="lb-info"><div class="lb-name">Pierre D.</div><div class="lb-country">🇫🇷 Francia</div></div><div class="lb-pts" style="color:var(--sub)">3.120</div></div>
+              <div class="lb-row"><div class="lb-rank" style="color:var(--sub)">5</div><div class="lb-avatar">🐺</div><div class="lb-info"><div class="lb-name">Jan V.</div><div class="lb-country">🇳🇱 Olanda</div></div><div class="lb-pts" style="color:var(--sub)">2.980</div></div>
+              <div style="height:1px;background:var(--border);margin:4px 0;"></div>
+              <div class="lb-row me"><div class="lb-rank" style="color:var(--cyan)">12</div><div class="lb-avatar" style="border-color:rgba(0,212,255,0.4)">⭐</div><div class="lb-info"><div class="lb-name">Marco R.</div><div class="lb-country">🇮🇹 Italia</div></div><div class="lb-pts">1.640</div><div class="lb-me-tag">TU</div></div>
+            </div>
+            <div style="height:16px;"></div>
+          </div>
+          <div class="bottom-nav">
+            <button class="bnav-item" onclick="goScreen('home')"><span class="icon">🏠</span><span class="label">Home</span></button>
+            <button class="bnav-item" onclick="goScreen('allenati')"><span class="icon">⚽</span><span class="label">Allenati</span></button>
+            <button class="bnav-item active" onclick="goScreen('leaderboard')"><span class="icon">🏆</span><span class="label">Globale</span></button>
+          </div>
+        </div>
+
+      </div><!-- phone-screen -->
+    </div><!-- phone-frame -->
+  </div><!-- phone-scene -->
+
+  <div class="demo-hint">Naviga usando la barra in basso nel telefono</div>
+
+  <div class="demo-controls">
+    <button class="ctrl-btn active" id="ctrl-home" onclick="goScreen('home')">🏠 Home</button>
+    <button class="ctrl-btn" id="ctrl-allenati" onclick="goScreen('allenati')">⚽ Allenati</button>
+    <button class="ctrl-btn" id="ctrl-training" onclick="goScreen('training')">▶ Sessione live</button>
+    <button class="ctrl-btn" id="ctrl-result" onclick="goScreen('result')">🏆 Risultato</button>
+    <button class="ctrl-btn" id="ctrl-leaderboard" onclick="goScreen('leaderboard')">📊 Leaderboard</button>
+  </div>
+
+  <div class="demo-footer">
+    <div class="logo"><em>IN</em>SOCCER</div>
+    <p>Questa è una demo visiva. L'app reale si connette ai conetti via Bluetooth e registra ogni sessione in tempo reale.</p>
+    <a href="index.html">Torna al sito</a>
+  </div>
+</div>
+
+<script>
+  const screens = ['home','allenati','training','result','leaderboard'];
+
+  function goScreen(name) {
+    screens.forEach(s => {
+      const el = document.getElementById('screen-' + s);
+      if (el) { el.style.display = 'none'; el.classList.remove('active'); }
+      const btn = document.getElementById('ctrl-' + s);
+      if (btn) btn.classList.remove('active');
+    });
+    const target = document.getElementById('screen-' + name);
+    if (target) {
+      target.style.display = 'flex';
+      requestAnimationFrame(() => target.classList.add('active'));
+    }
+    const ctrlBtn = document.getElementById('ctrl-' + name);
+    if (ctrlBtn) ctrlBtn.classList.add('active');
+
+    if (name === 'result') {
+      setTimeout(() => {
+        const bar = document.getElementById('xp-bar');
+        if (bar) bar.style.width = '68%';
+      }, 400);
+    }
+    if (name === 'training') startTrainingDemo();
+    else stopTrainingDemo();
+  }
+
+  let trainingInterval = null;
+  let trainingSeconds = 82;
+  const coneStates = [
+    ['on-cyan','on-lime',''],
+    ['','on-cyan','on-lime'],
+    ['on-lime','','on-cyan'],
+    ['on-coral','on-cyan',''],
+    ['','on-lime','on-cyan'],
+  ];
+  let coneIdx = 0;
+  let tocchi = 23, score = 680, streak = 5, ms = 210;
+
+  function startTrainingDemo() {
+    stopTrainingDemo();
+    trainingSeconds = 82; tocchi = 23; score = 680; streak = 5; ms = 210; coneIdx = 0;
+    trainingInterval = setInterval(() => {
+      trainingSeconds = Math.max(0, trainingSeconds - 1);
+      const m = Math.floor(trainingSeconds / 60);
+      const s = trainingSeconds % 60;
+      const tv = document.getElementById('timer-val');
+      if (tv) tv.textContent = m + ':' + String(s).padStart(2,'0');
+      const pf = document.getElementById('progress-fill');
+      if (pf) pf.style.width = ((150 - trainingSeconds) / 150 * 100) + '%';
+
+      if (trainingSeconds % 2 === 0) {
+        coneIdx = (coneIdx + 1) % coneStates.length;
+        const state = coneStates[coneIdx];
+        ['cone1-led','cone2-led','cone3-led'].forEach((id, i) => {
+          const el = document.getElementById(id);
+          if (el) el.className = 'cone-led ' + state[i];
+        });
+        tocchi += Math.floor(Math.random() * 2) + 1;
+        score += Math.floor(Math.random() * 25) + 10;
+        streak = Math.min(streak + (Math.random() > 0.3 ? 1 : 0), 12);
+        ms = Math.max(140, ms + (Math.random() > 0.5 ? -8 : 5));
+        const lt = document.getElementById('live-tocchi');
+        const ls = document.getElementById('live-score');
+        const lst = document.getElementById('live-streak');
+        const lms = document.getElementById('live-ms');
+        if (lt) lt.textContent = tocchi;
+        if (ls) ls.textContent = score;
+        if (lst) lst.textContent = streak + '🔥';
+        if (lms) lms.textContent = ms + 'ms';
+      }
+      if (trainingSeconds === 0) { stopTrainingDemo(); goScreen('result'); }
+    }, 1000);
+  }
+
+  function stopTrainingDemo() {
+    if (trainingInterval) { clearInterval(trainingInterval); trainingInterval = null; }
+  }
+
+  goScreen('home');
+</script>
+</body>
+</html>
